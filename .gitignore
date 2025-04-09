@@ -134,3 +134,4 @@ dist
 .idea/modules.xml
 .idea/Tracking-App.iml
 .idea/vcs.xml
+server/tracker.sqlite

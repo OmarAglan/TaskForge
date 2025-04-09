@@ -15,16 +15,16 @@ const bcrypt = require('bcrypt')
 module.exports = {
   async register (req, res) {
     try {
-      const { username, password } = req.body;
-      const salt = await bcrypt.genSalt(10); // Generate salt
-      const hashedPassword = await bcrypt.hash(password, salt); // Hash password
+      const { username, password } = req.body
+      const salt = await bcrypt.genSalt(10) // Generate salt
+      const hashedPassword = await bcrypt.hash(password, salt) // Hash password
 
       const user = await User.create({ // Create user with hashed password
-        username: username,
+        username,
         password: hashedPassword
       })
       // Respond without sending the password back
-      res.status(200).send({ id: user.id, username: user.username });
+      res.status(200).send({ id: user.id, username: user.username })
     } catch (error) {
       res.status(400).send({
         error: 'This Username is already in use.'

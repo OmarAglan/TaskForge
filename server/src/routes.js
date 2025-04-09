@@ -23,8 +23,8 @@ module.exports = (app) => {
     AuthenticationControllerPolicy.register,
     AuthenticationController.register)
 
-  app.get('/login',
-    )
+  app.get('/login'
+  )
 
   app.get('/status', (req, res) => {
     res.send({
