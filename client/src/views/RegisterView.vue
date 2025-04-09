@@ -27,7 +27,7 @@ async function register() {
       password: password.value,
     });
     if (response.status === 200) {
-      message.value = 'Registration successful!';
+      message.value = 'registerView.successMessage';
     }
 
     // Handle successful registration (e.g., redirect)
@@ -37,7 +37,7 @@ async function register() {
     }, 7000); // hide after 7 seconds
   } catch (err) {
     // Handle error
-    error.value = err.response.data.error;
+    error.value = err.response?.data?.error || 'registerView.failMessage';
     /**
     * Sets a timeout to clear the error message after 6 seconds.
     * This avoids the error persisting on screen indefinitely after being handled.
@@ -54,39 +54,38 @@ async function register() {
   <div>
     <br>
     <v-card class="mx-auto pa-12 pb-8" elevation="8" max-width="448" rounded="lg">
-      <div class="text-subtitle-1 text-medium-emphasis">User Name</div>
+      <div class="text-subtitle-1 text-medium-emphasis">{{ $t('registerView.usernameLabel') }}</div>
 
-      <v-text-field density="compact" placeholder="User Name" prepend-inner-icon="mdi-account-outline"
+      <v-text-field density="compact" :placeholder="$t('registerView.usernamePlaceholder')" prepend-inner-icon="mdi-account-outline"
         variant="outlined" v-model="username"></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-        Password
+        {{ $t('registerView.passwordLabel') }}
       </div>
 
       <v-text-field :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'" :type="visible ? 'text' : 'password'"
-        density="compact" placeholder="Enter your password" prepend-inner-icon="mdi-lock-outline" variant="outlined"
+        density="compact" :placeholder="$t('registerView.passwordPlaceholder')" prepend-inner-icon="mdi-lock-outline" variant="outlined"
         @click:append-inner="visible = !visible" v-model="password"></v-text-field>
 
       <v-card class="mb-12" color="surface-variant" variant="tonal">
-        <v-alert v-if="message" text="" title="Register Success" type="success">
-          <p>You Can Sign In Now</p>
-          <p>{{ success }}</p>
+        <v-alert v-if="message" text="" :title="$t('registerView.successTitle')" type="success">
+          <p>{{ $t(message) }}</p>
         </v-alert>
 
-        <v-alert v-if="error" text='' title="Register Fail" type="error">
-          <p>{{ error }}</p>
+        <v-alert v-if="error" text='' :title="$t('registerView.failTitle')" type="error">
+          <p>{{ error.includes('.') ? $t(error) : error }}</p>
         </v-alert>
 
       </v-card>
 
       <v-btn class="mb-8" color="blue" size="large" variant="tonal" block @click="register()">
-        Sign Up
+        {{ $t('registerView.submitButton') }}
       </v-btn>
 
       <v-card-text class="text-center">
         <v-btn href="/login" >
         <a class="text-blue text-decoration-none" rel="noopener noreferrer">
-          Sign In now <v-icon icon="mdi-chevron-right"></v-icon>
+          {{ $t('registerView.loginPrompt') }} <v-icon icon="mdi-chevron-right"></v-icon>
         </a>
         </v-btn>
       </v-card-text>

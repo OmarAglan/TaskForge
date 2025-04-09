@@ -1,0 +1,38 @@
+{
+  "appTitle": "Tasky",
+  "nav": {
+    "dashboard": "Dashboard",
+    "register": "Register",
+    "login": "Login",
+    "about": "About",
+    "logout": "Logout"
+  },
+  "registerView": {
+    "title": "Register",
+    "usernameLabel": "User Name",
+    "passwordLabel": "Password",
+    "usernamePlaceholder": "User Name",
+    "passwordPlaceholder": "Enter your password",
+    "submitButton": "Sign Up",
+    "loginPrompt": "Sign In now",
+    "successTitle": "Register Success",
+    "successMessage": "You Can Sign In Now",
+    "failTitle": "Register Fail",
+    "failMessage": "Registration failed. Please check errors."
+  },
+  "loginView": {
+    "title": "Login"
+  },
+  "homeView": {
+    "title": "Home",
+    "chipMessage": "Our Tasks Tracker Has Been Released.",
+    "chipAction": "Click here to Try It.",
+    "mainHeading": "Track Your Tasks And Organize Your Time With Our App",
+    "subHeading": "Something about the benefits...",
+    "registerButton": "Register",
+    "loginButton": "Login"
+  },
+  "aboutView": {
+    "title": "About The App"
+  }
+} 

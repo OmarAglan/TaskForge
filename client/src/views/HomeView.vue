@@ -1,4 +1,6 @@
 <script setup>
+// Note: This view is currently acting as a landing page.
+// It should be updated later to be the main dashboard for logged-in users.
 </script>
 
 <template>
@@ -7,15 +9,16 @@
       <v-container class="h-screen w-auto d-flex align-center justify-center">
         <div class="w-auto w-md-50 text-center">
           <v-chip border="thin opacity-25" color="surface" variant="flat">
-            <span class="hidden-sm-and-down">Our Tasks Tracker Has Been Released. </span> Click <a class="d-inline-block mx-1 text-decoration-none text-primary" href="/login">here</a> to Try It.
+            <span class="hidden-sm-and-down">{{ $t('homeView.chipMessage') }} </span>
+            <a class="d-inline-block mx-1 text-decoration-none text-primary" href="/login">{{ $t('homeView.chipAction') }}</a>
           </v-chip>
 
           <h1 class="text-h4 text-md-h2 font-weight-bold my-6">
-            Track You Tasks And Organize You Time With Our App
+            {{ $t('homeView.mainHeading') }}
           </h1>
 
           <div class="text-body-1 text-md-h5 mb-10 text-black">
-            Something
+            {{ $t('homeView.subHeading') }}
           </div>
 
           <div class="d-flex ga-4 justify-center">
@@ -24,7 +27,7 @@
               color="primary"
               flat
               rounded="lg"
-              text="Register"
+              :text="$t('homeView.registerButton')"
               href="/register"
             />
 
@@ -33,7 +36,7 @@
               class="text-none text-black"
               flat
               rounded="lg"
-              text="Login"
+              :text="$t('homeView.loginButton')"
               href="/login"
             />
           </div>
@@ -44,8 +47,9 @@
     </v-main>
   </v-layout>
 
-  <!-- three Futures -->
+  <!-- three Features -->
   <div class="d-flex justify-space-around flex-row mb-6">
+    <!-- Placeholder Cards - Add translations later if these become dynamic -->
       <v-card
         class="ma-2 pa-2"
         prepend-icon="$vuetify"

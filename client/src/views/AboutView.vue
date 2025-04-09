@@ -4,7 +4,8 @@ export default {
 </script>
 <template>
   <div>
-    <h1>About The App</h1>
+    <h1>{{ $t('aboutView.title') }}</h1>
+    <!-- Add more translated content later -->
   </div>
 </template>
 

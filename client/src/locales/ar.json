@@ -1,0 +1,38 @@
+{
+  "appTitle": "تاسكي",
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "register": "تسجيل",
+    "login": "دخول",
+    "about": "حول",
+    "logout": "خروج"
+  },
+  "registerView": {
+    "title": "تسجيل حساب",
+    "usernameLabel": "اسم المستخدم",
+    "passwordLabel": "كلمة المرور",
+    "usernamePlaceholder": "اسم المستخدم",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "submitButton": "إنشاء حساب",
+    "loginPrompt": "تسجيل الدخول الآن",
+    "successTitle": "نجاح التسجيل",
+    "successMessage": "يمكنك تسجيل الدخول الآن",
+    "failTitle": "فشل التسجيل",
+    "failMessage": "فشل التسجيل. الرجاء التحقق من الأخطاء."
+  },
+  "loginView": {
+    "title": "تسجيل الدخول"
+  },
+  "homeView": {
+    "title": "الرئيسية",
+    "chipMessage": "تم إطلاق متتبع المهام الخاص بنا.",
+    "chipAction": "اضغط هنا لتجربته.",
+    "mainHeading": "تتبع مهامك ونظم وقتك مع تطبيقنا",
+    "subHeading": "شيء عن الفوائد...",
+    "registerButton": "تسجيل",
+    "loginButton": "دخول"
+  },
+  "aboutView": {
+    "title": "حول التطبيق"
+  }
+} 
