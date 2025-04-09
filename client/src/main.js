@@ -32,13 +32,25 @@ const i18n = createI18n({
   }
 })
 
+// Configure Vuetify RTL and locale integration
 const vuetify = createVuetify({
-    theme: {
-        defaultTheme: 'dark'
+  locale: {
+    // Use i18n locale ref directly
+    locale: i18n.global.locale,
+    // Define which languages are RTL
+    rtl: {
+      ar: true,
     },
-    components,
-    directives,
-  })
+    // You might need Vuetify's own messages for built-in components
+    // import { en, ar } from 'vuetify/locale'
+    // messages: { en, ar } // Add this if needed later
+  },
+  theme: {
+      defaultTheme: 'dark'
+  },
+  components,
+  directives,
+})
 
 app.use(createPinia())
 app.use(vuetify)
