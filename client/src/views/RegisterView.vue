@@ -84,9 +84,11 @@ async function register() {
       </v-btn>
 
       <v-card-text class="text-center">
-        <a class="text-blue text-decoration-none" href="#" rel="noopener noreferrer" target="_blank">
+        <v-btn href="/login" >
+        <a class="text-blue text-decoration-none" rel="noopener noreferrer">
           Sign In now <v-icon icon="mdi-chevron-right"></v-icon>
         </a>
+        </v-btn>
       </v-card-text>
     </v-card>
   </div>
