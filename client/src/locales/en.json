@@ -40,6 +40,18 @@
     "registerButton": "Register",
     "loginButton": "Login"
   },
+  "dashboard": {
+    "totalTasks": "Total Tasks",
+    "completedTasks": "Completed Tasks",
+    "pendingTasks": "Pending Tasks",
+    "overdueTasks": "Overdue Tasks",
+    "completionProgress": "Completion Progress",
+    "tasksCompleted": "tasks completed",
+    "tasksByStatus": "Tasks by Status",
+    "tasksByPriority": "Tasks by Priority",
+    "recentTasks": "Recent Tasks",
+    "viewAllTasks": "View All Tasks"
+  },
   "aboutView": {
     "title": "About The App"
   },

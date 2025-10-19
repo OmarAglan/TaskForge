@@ -7,17 +7,42 @@ Tasky is a Single Page Application (SPA) that allows users to register, login, c
 ## Table of Contents
 
 - [Tasky - Task Tracking Web Application](#tasky---task-tracking-web-application)
+  - [Table of Contents](#table-of-contents)
   - [Technology Stack](#technology-stack)
+    - [Frontend](#frontend)
+    - [Backend](#backend)
   - [Current Status](#current-status)
+    - [✅ Completed Features](#-completed-features)
+    - [🚧 In Progress](#-in-progress)
+    - [❌ Not Yet Implemented](#-not-yet-implemented)
   - [Features](#features)
+    - [Authentication](#authentication)
+    - [User Interface](#user-interface)
+    - [Task Management](#task-management)
+    - [Project Management](#project-management)
+    - [Dashboard](#dashboard)
   - [API Endpoints](#api-endpoints)
-  - [Authentication](#authentication)
+    - [Authentication](#authentication-1)
+    - [Tasks](#tasks)
+    - [Projects](#projects)
+    - [General](#general)
+  - [Authentication](#authentication-2)
+    - [Authentication Flow](#authentication-flow)
   - [Security Considerations](#security-considerations)
   - [Installation](#installation)
+    - [Prerequisites](#prerequisites)
+    - [Clone the repository](#clone-the-repository)
+    - [Install dependencies](#install-dependencies)
   - [Running the Application](#running-the-application)
+    - [Separate Development](#separate-development)
   - [Environment Variables](#environment-variables)
   - [Project Structure](#project-structure)
   - [Contributing](#contributing)
+    - [Code Style](#code-style)
+  - [Installation](#installation-1)
+    - [Clone the repository](#clone-the-repository-1)
+    - [Install dependencies](#install-dependencies-1)
+  - [Running the application](#running-the-application-1)
 
 ## Technology Stack
 
@@ -44,7 +69,7 @@ Tasky is a Single Page Application (SPA) that allows users to register, login, c
 
 ## Current Status
 
-**Project Completion: ~35%**
+**Project Completion: ~65%**
 
 ### ✅ Completed Features
 - User registration with validation
@@ -54,18 +79,22 @@ Tasky is a Single Page Application (SPA) that allows users to register, login, c
 - Theme switching (dark/light mode)
 - Responsive design
 - Authentication middleware for protected routes
+- Task management with full CRUD operations
+- Project management with full CRUD operations
+- Dashboard with real-time statistics
+- Task status updates
+- Task priority levels
+- Due date tracking
 
 ### 🚧 In Progress
-- Task database model
-- Project database model
-- Task CRUD operations
+- Task filtering and search functionality
+- Project management UI enhancements
 
 ### ❌ Not Yet Implemented
-- Task management UI
-- Project management UI
-- Dashboard with real data
-- Task filtering and search
-- Task status updates
+- Multi-user task assignment
+- Task categories and tags
+- Notifications system
+- Data export functionality
 
 ## Features
 
@@ -83,18 +112,48 @@ Tasky is a Single Page Application (SPA) that allows users to register, login, c
 - Bilingual support (English/Arabic)
 - RTL layout support for Arabic
 
-### Task Management (Planned)
+### Task Management
 - Create, read, update, delete tasks
 - Organize tasks into projects
 - Track task status (todo, in progress, completed, blocked)
-- Set task priorities
-- Add due dates
+- Set task priorities (low, medium, high, urgent)
+- Add due dates with overdue warnings
+- Quick status updates from task cards
+
+### Project Management
+- Create, read, update, delete projects
+- Assign colors to projects for visual organization
+- View task statistics per project
+- Project-based task filtering
+
+### Dashboard
+- Real-time task statistics
+- Completion progress tracking
+- Tasks by status and priority breakdowns
+- Recent tasks display
+- Overdue tasks warnings
 
 ## API Endpoints
 
 ### Authentication
 - `POST /register` - Register a new user
 - `POST /login` - Authenticate user and return JWT token
+
+### Tasks
+- `GET /tasks` - Get all tasks for authenticated user
+- `GET /tasks/:id` - Get a specific task
+- `POST /tasks` - Create a new task
+- `PUT /tasks/:id` - Update a task
+- `DELETE /tasks/:id` - Delete a task
+- `PATCH /tasks/:id/status` - Update task status only
+
+### Projects
+- `GET /projects` - Get all projects for authenticated user
+- `GET /projects/:id` - Get a specific project
+- `POST /projects` - Create a new project
+- `PUT /projects/:id` - Update a project
+- `DELETE /projects/:id` - Delete a project
+- `GET /projects/:id/tasks` - Get all tasks in a project
 
 ### General
 - `GET /` - Server status/hello world
@@ -219,12 +278,12 @@ Tracking-App/
 ├── client/                      # Vue.js Frontend
 │   ├── src/
 │   │   ├── assets/             # Images, styles, icons
-│   │   ├── components/         # Reusable components
+│   │   ├── components/         # Reusable components (TaskCard, TaskForm)
 │   │   ├── locales/            # i18n files (en.json, ar.json)
 │   │   ├── router/             # Vue Router configuration
-│   │   ├── services/           # API services
-│   │   ├── stores/             # Pinia stores
-│   │   ├── views/              # Page components
+│   │   ├── services/           # API services (Api, AuthenticationService, TaskService, ProjectService)
+│   │   ├── stores/             # Pinia stores (auth, tasks, projects)
+│   │   ├── views/              # Page components (HomeView, LoginView, RegisterView, AboutView)
 │   │   ├── App.vue             # Root component
 │   │   └── main.js             # App initialization
 │   └── package.json            # Frontend dependencies
@@ -232,10 +291,10 @@ Tracking-App/
 ├── server/                      # Express.js Backend
 │   ├── src/
 │   │   ├── config/             # Configuration
-│   │   ├── controllers/        # Business logic
-│   │   ├── middleware/         # Custom middleware
-│   │   ├── models/             # Sequelize models
-│   │   ├── policies/           # Validation middleware
+│   │   ├── controllers/        # Business logic (AuthenticationController, TaskController, ProjectController)
+│   │   ├── middleware/         # Custom middleware (authentication)
+│   │   ├── models/             # Sequelize models (User, Task, Project)
+│   │   ├── policies/           # Validation middleware (AuthenticationControllerPolicy, TaskControllerPolicy, ProjectControllerPolicy)
 │   │   ├── app.js              # Express app setup
 │   │   └── routes.js           # Route definitions
 │   └── package.json            # Backend dependencies

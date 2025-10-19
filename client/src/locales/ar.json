@@ -40,6 +40,18 @@
     "registerButton": "تسجيل",
     "loginButton": "دخول"
   },
+  "dashboard": {
+    "totalTasks": "إجمالي المهام",
+    "completedTasks": "المهام المكتملة",
+    "pendingTasks": "المهام المعلقة",
+    "overdueTasks": "المهام المتأخرة",
+    "completionProgress": "معدل الإنجاز",
+    "tasksCompleted": "مهمة مكتملة",
+    "tasksByStatus": "المهام حسب الحالة",
+    "tasksByPriority": "المهام حسب الأولوية",
+    "recentTasks": "المهام الأخيرة",
+    "viewAllTasks": "عرض جميع المهام"
+  },
   "aboutView": {
     "title": "حول التطبيق"
   },
