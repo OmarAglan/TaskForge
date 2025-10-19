@@ -16,6 +16,11 @@ const fontFamily = computed(() => {
   return locale.value === 'ar' ? 'Cairo, sans-serif' : 'Inter, sans-serif';
 });
 
+// Computed property for text direction
+const direction = computed(() => {
+  return locale.value === 'ar' ? 'rtl' : 'ltr';
+});
+
 // Function to update HTML lang attribute
 watch(locale, (newLocale) => {
   document.documentElement.lang = newLocale;
