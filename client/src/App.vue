@@ -1,15 +1,15 @@
 <script setup>
-import { RouterView, useRouter } from 'vue-router';
+import { RouterView, useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useTheme } from 'vuetify';
 import { useI18n } from 'vue-i18n';
-import { computed, watch, onMounted } from 'vue';
-import { ref } from 'vue';
+import { computed, watch, onMounted, ref } from 'vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 const theme = useTheme();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 
 // Computed property for dynamic font family
 const fontFamily = computed(() => {
@@ -40,11 +40,17 @@ function switchLanguage(lang) {
   // Persist language preference
   localStorage.setItem('user-locale', lang);
 }
+
+// Function to check if a route is active
+const isRouteActive = (routeName) => {
+  return route.name === routeName;
+};
 </script>
 
 <template>
   <v-app
     :theme="theme.global.name.value"
+    :dir="direction"
     :style="{ fontFamily: fontFamily }"
   >
     <v-app-bar app flat density="compact" scroll-behavior="elevate">
@@ -58,18 +64,21 @@ function switchLanguage(lang) {
       <v-spacer></v-spacer> <!-- Pushes nav to center -->
 
       <!-- Central Navigation Links -->
-      <div class="d-flex justify-center">
-          <v-btn variant="text" v-if="authStore.isLoggedIn" to="/">{{ $t('nav.dashboard') }}</v-btn>
-          <v-btn variant="text" to="/about">{{ $t('nav.about') }}</v-btn>
-          <!-- Add other central links here if needed -->
+      <div class="d-none d-md-flex justify-center"> <!-- Hide on smaller screens -->
+          <!-- Use :class to make active link bold -->
+          <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('home') }" v-if="authStore.isLoggedIn" to="/">{{ $t('nav.dashboard') }}</v-btn>
+          <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('about') }" to="/about">{{ $t('nav.about') }}</v-btn>
+          <!-- Placeholders based on Figma -->
+          <v-btn variant="text" disabled>How it Works</v-btn>
+          <v-btn variant="text" disabled>Services</v-btn>
       </div>
 
       <v-spacer></v-spacer> <!-- Pushes actions/auth to right -->
 
       <!-- Auth Buttons & Action Icons (Right) -->
       <template v-if="!authStore.isLoggedIn">
-        <v-btn variant="text" to="/login" class="mx-1">{{ $t('nav.login') }}</v-btn>
-        <v-btn variant="elevated" color="primary" to="/register" class="ml-1">{{ $t('nav.register') }}</v-btn>
+        <v-btn variant="text" to="/login" class="mx-1">{{ $t('nav.login') }}</v-btn> <!-- "Sign In" -->
+        <v-btn variant="elevated" color="primary" to="/register" class="ml-1">{{ $t('nav.register') }}</v-btn> <!-- "Sign Up" -->
       </template>
 
       <!-- Language Switcher -->
@@ -94,7 +103,19 @@ function switchLanguage(lang) {
       <!-- Logout Button -->
       <v-btn v-if="authStore.isLoggedIn" density="comfortable" icon="mdi-logout" @click="handleLogout" class="ml-1"></v-btn>
 
+      <!-- Hamburger Menu for Mobile -->
+      <v-app-bar-nav-icon class="d-md-none" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+
     </v-app-bar>
+
+    <!-- Navigation Drawer for Mobile -->
+    <v-navigation-drawer v-model="drawer" temporary location="right" class="d-md-none">
+       <v-list density="compact" nav>
+          <v-list-item v-if="authStore.isLoggedIn" prepend-icon="mdi-view-dashboard" :title="t('nav.dashboard')" value="home" to="/"></v-list-item>
+          <v-list-item prepend-icon="mdi-information-outline" :title="t('nav.about')" value="about" to="/about"></v-list-item>
+          <!-- Add other links here -->
+       </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <v-container class="pt-12 mt-5">
@@ -123,5 +144,10 @@ html, body, #app, .v-application {
 body {
   margin: 0;
   padding: 0;
+}
+
+/* Style for bold active nav link */
+.font-weight-bold {
+  font-weight: 700 !important; /* Match Figma bold */
 }
 </style>
