@@ -21,7 +21,15 @@
     "failMessage": "Registration failed. Please check errors."
   },
   "loginView": {
-    "title": "Login"
+    "title": "Login",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "submitButton": "Sign In",
+    "registerPrompt": "Don't have an account?",
+    "registerLink": "Register",
+    "successMessage": "Login successful! Redirecting...",
+    "errorInvalidCredentials": "Invalid username or password",
+    "errorServerError": "Server error. Please try again."
   },
   "homeView": {
     "title": "Home",

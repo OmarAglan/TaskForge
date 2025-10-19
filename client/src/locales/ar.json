@@ -21,7 +21,15 @@
     "failMessage": "فشل التسجيل. الرجاء التحقق من الأخطاء."
   },
   "loginView": {
-    "title": "تسجيل الدخول"
+    "title": "تسجيل الدخول",
+    "usernameLabel": "اسم المستخدم",
+    "passwordLabel": "كلمة المرور",
+    "submitButton": "دخول",
+    "registerPrompt": "ليس لديك حساب؟",
+    "registerLink": "سجل الآن",
+    "successMessage": "تم تسجيل الدخول بنجاح! جاري التحويل...",
+    "errorInvalidCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "errorServerError": "خطأ في الخادم. يرجى المحاولة مرة أخرى."
   },
   "homeView": {
     "title": "الرئيسية",
