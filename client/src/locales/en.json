@@ -42,5 +42,63 @@
   },
   "aboutView": {
     "title": "About The App"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "createNew": "Create Task",
+    "editTask": "Edit Task",
+    "deleteConfirm": "Delete Task?",
+    "deleteConfirmMessage": "Are you sure you want to delete the task '{title}'?",
+    "noTasks": "No tasks found. Create your first task!",
+    "noTasksFiltered": "No tasks match the current filters.",
+    "overdue": "Overdue",
+    "title": "Title",
+    "description": "Description",
+    "status": {
+      "label": "Status",
+      "todo": "To Do",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "blocked": "Blocked"
+    },
+    "priority": {
+      "label": "Priority",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "dueDate": "Due Date",
+    "project": "Project",
+    "noProject": "No Project",
+    "filters": {
+      "title": "Filters",
+      "allStatuses": "All Statuses",
+      "allPriorities": "All Priorities",
+      "allProjects": "All Projects"
+    }
+  },
+  "projects": {
+    "title": "Projects",
+    "createNew": "Create Project",
+    "editProject": "Edit Project",
+    "deleteConfirm": "Delete Project?",
+    "deleteConfirmMessage": "Are you sure you want to delete the project '{name}'? This will also delete all tasks in this project.",
+    "noProjects": "No projects found. Create your first project!",
+    "name": "Project Name",
+    "description": "Description",
+    "color": "Color",
+    "taskStats": "{count} tasks"
+  },
+  "common": {
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "create": "Create",
+    "update": "Update",
+    "save": "Save",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
   }
-} 
+}

@@ -42,5 +42,63 @@
   },
   "aboutView": {
     "title": "حول التطبيق"
+  },
+  "tasks": {
+    "title": "المهام",
+    "createNew": "إنشاء مهمة",
+    "editTask": "تعديل المهمة",
+    "deleteConfirm": "حذف المهمة؟",
+    "deleteConfirmMessage": "هل أنت متأكد من حذف المهمة '{title}'؟",
+    "noTasks": "لم يتم العثور على مهام. قم بإنشاء أول مهمة لك!",
+    "noTasksFiltered": "لا توجد مهام تطابق الفلاتر الحالية.",
+    "overdue": "متأخر",
+    "title": "العنوان",
+    "description": "الوصف",
+    "status": {
+      "label": "الحالة",
+      "todo": "للقيام بها",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "blocked": "محجوب"
+    },
+    "priority": {
+      "label": "الأولوية",
+      "low": "منخفض",
+      "medium": "متوسط",
+      "high": "عالي",
+      "urgent": "عاجل"
+    },
+    "dueDate": "تاريخ الاستحقاق",
+    "project": "المشروع",
+    "noProject": "لا يوجد مشروع",
+    "filters": {
+      "title": "الفلاتر",
+      "allStatuses": "جميع الحالات",
+      "allPriorities": "جميع الأولويات",
+      "allProjects": "جميع المشاريع"
+    }
+  },
+  "projects": {
+    "title": "المشاريع",
+    "createNew": "إنشاء مشروع",
+    "editProject": "تعديل المشروع",
+    "deleteConfirm": "حذف المشروع؟",
+    "deleteConfirmMessage": "هل أنت متأكد من حذف المشروع '{name}'؟ سيؤدي هذا أيضًا إلى حذف جميع المهام في هذا المشروع.",
+    "noProjects": "لم يتم العثور على مشاريع. قم بإنشاء أول مشروع لك!",
+    "name": "اسم المشروع",
+    "description": "الوصف",
+    "color": "اللون",
+    "taskStats": "{count} مهام"
+  },
+  "common": {
+    "edit": "تعديل",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "create": "إنشاء",
+    "update": "تحديث",
+    "save": "حفظ",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "success": "نجح"
   }
-} 
+}
