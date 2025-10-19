@@ -31,9 +31,19 @@ fs
     file !== 'index.js'
   )
   .forEach(file => {
-    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
+    const model = require(path.join(__dirname, file))(sequelize)
     db[model.name] = model
   })
+
+/**
+ * Set up model associations
+ * This runs the associate method on each model if it exists
+ */
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db)
+  }
+})
 
 /**
  * Expose sequelize instance and Sequelize constructor
