@@ -10,6 +10,7 @@ const router = useRouter();
 const route = useRoute();
 const theme = useTheme();
 const { locale, t } = useI18n();
+const drawer = ref(false);
 
 // Computed property for dynamic font family
 const fontFamily = computed(() => {
