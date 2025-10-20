@@ -73,10 +73,9 @@ const isRouteActive = (routeName) => {
       <div class="d-none d-md-flex justify-center"> <!-- Hide on smaller screens -->
           <!-- Use :class to make active link bold -->
           <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('home') }" v-if="authStore.isLoggedIn" to="/">{{ $t('nav.dashboard') }}</v-btn>
+          <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('tasks') }" v-if="authStore.isLoggedIn" to="/tasks">{{ $t('tasks.title') }}</v-btn>
+          <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('projects') }" v-if="authStore.isLoggedIn" to="/projects">{{ $t('projects.title') }}</v-btn>
           <v-btn variant="text" :class="{ 'font-weight-bold': isRouteActive('about') }" to="/about">{{ $t('nav.about') }}</v-btn>
-          <!-- Placeholders based on Figma -->
-          <v-btn variant="text" disabled>How it Works</v-btn>
-          <v-btn variant="text" disabled>Services</v-btn>
       </div>
 
       <v-spacer></v-spacer> <!-- Pushes actions/auth to right -->
