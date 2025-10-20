@@ -1,182 +1,350 @@
 # Tasky - Task Tracking Web Application
 
-A Vue.js + Express.js web application for tracking tasks and managing projects with bilingual support (English/Arabic).
+A modern, full-stack web application for tracking tasks and managing projects with bilingual support (English/Arabic).
 
-Tasky is a Single Page Application (SPA) that allows users to register, login, create tasks, organize them into projects, and track their progress. The application features a modern UI with Material Design components and supports both LTR and RTL layouts.
+![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)
+![Completion](https://img.shields.io/badge/Completion-75--80%25-green)
+![License](https://img.shields.io/badge/License-MIT-blue)
 
-## Table of Contents
+## 📋 Table of Contents
 
-- [Tasky - Task Tracking Web Application](#tasky---task-tracking-web-application)
-  - [Table of Contents](#table-of-contents)
-  - [Technology Stack](#technology-stack)
-    - [Frontend](#frontend)
-    - [Backend](#backend)
-  - [Current Status](#current-status)
-    - [✅ Completed Features](#-completed-features)
-    - [🚧 In Progress](#-in-progress)
-    - [❌ Not Yet Implemented](#-not-yet-implemented)
-  - [Features](#features)
-    - [Authentication](#authentication)
-    - [User Interface](#user-interface)
-    - [Task Management](#task-management)
-    - [Project Management](#project-management)
-    - [Dashboard](#dashboard)
-  - [API Endpoints](#api-endpoints)
-    - [Authentication](#authentication-1)
-    - [Tasks](#tasks)
-    - [Projects](#projects)
-    - [General](#general)
-  - [Authentication](#authentication-2)
-    - [Authentication Flow](#authentication-flow)
-  - [Security Considerations](#security-considerations)
-  - [Installation](#installation)
-    - [Prerequisites](#prerequisites)
-    - [Clone the repository](#clone-the-repository)
-    - [Install dependencies](#install-dependencies)
-  - [Running the Application](#running-the-application)
-    - [Separate Development](#separate-development)
-  - [Environment Variables](#environment-variables)
-  - [Project Structure](#project-structure)
-  - [Contributing](#contributing)
-    - [Code Style](#code-style)
-  - [Installation](#installation-1)
-    - [Clone the repository](#clone-the-repository-1)
-    - [Install dependencies](#install-dependencies-1)
-  - [Running the application](#running-the-application-1)
+- [Overview](#overview)
+- [Technology Stack](#technology-stack)
+- [Current Status](#current-status)
+- [Features](#features)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [API Endpoints](#api-endpoints)
+- [Project Structure](#project-structure)
+- [Authentication](#authentication)
+- [Security](#security)
+- [Contributing](#contributing)
+- [Roadmap](#roadmap)
 
-## Technology Stack
+## 🎯 Overview
+
+Tasky is a Single Page Application (SPA) that allows users to:
+
+- ✅ Register and authenticate securely
+- ✅ Create and manage tasks with priorities and due dates
+- ✅ Organize tasks into color-coded projects
+- ✅ Track progress with a real-time dashboard
+- ✅ Switch between English and Arabic languages (with RTL support)
+- ✅ Toggle between dark and light themes
+
+The application is built with Vue.js 3 on the frontend and Express.js on the backend, using SQLite for development database and JWT for secure authentication.
+
+## 🛠️ Technology Stack
 
 ### Frontend
-- **Framework:** Vue.js 3 (Composition API)
-- **Build Tool:** Vite
-- **UI Library:** Vuetify 3 with Material Design Icons
-- **State Management:** Pinia
-- **Routing:** Vue Router 4
-- **HTTP Client:** Axios
-- **Internationalization:** Vue-i18n (English & Arabic with RTL support)
-- **Validation:** Vuelidate
-- **Testing:** Vitest
+
+- **Framework:** Vue.js 3.4.15 (Composition API with `<script setup>`)
+- **Build Tool:** Vite 6.2.5
+- **UI Library:** Vuetify 3.5.11 with Material Design Icons
+- **State Management:** Pinia 2.1.7
+- **Routing:** Vue Router 4.2.5
+- **HTTP Client:** Axios 1.6.7
+- **Internationalization:** Vue-i18n 9.14.4 (English & Arabic with RTL)
+- **Validation:** Vuelidate 2.0.3
+- **Testing:** Vitest 3.1.1
+- **Code Quality:** ESLint, Prettier
 
 ### Backend
+
 - **Runtime:** Node.js
-- **Framework:** Express.js
-- **ORM:** Sequelize
-- **Database:** SQLite
-- **Authentication:** JWT (JSON Web Tokens)
-- **Password Hashing:** bcrypt
-- **Validation:** Joi
-- **Development:** Nodemon
+- **Framework:** Express.js 4.18.3
+- **ORM:** Sequelize 6.37.7
+- **Database:** SQLite 3 (development), PostgreSQL/MySQL (planned for production)
+- **Authentication:** JWT (jsonwebtoken)
+- **Password Hashing:** bcrypt 6.0.0
+- **Validation:** Joi 18.0.1
+- **Middleware:** CORS 2.8.5, Morgan 1.10.1, body-parser 2.2.0
+- **Development:** Nodemon 3.1.10
 
-## Current Status
+### Development Tools
 
-**Project Completion: ~65%**
+- **Concurrency:** Concurrently 9.2.1 (runs client + server simultaneously)
+- **Version Control:** Git
 
-### ✅ Completed Features
-- User registration with validation
-- User authentication with JWT
-- Session management with localStorage persistence
-- Bilingual UI (English/Arabic) with RTL support
-- Theme switching (dark/light mode)
-- Responsive design
-- Authentication middleware for protected routes
-- Task management with full CRUD operations
-- Project management with full CRUD operations
-- Dashboard with real-time statistics
-- Task status updates
-- Task priority levels
-- Due date tracking
+## 📊 Current Status
 
-### 🚧 In Progress
-- Task filtering and search functionality
-- Project management UI enhancements
+**Project Completion: ~75-80%**
 
-### ❌ Not Yet Implemented
-- Multi-user task assignment
-- Task categories and tags
-- Notifications system
-- Data export functionality
+### ✅ Completed Features (100%)
 
-## Features
+**Authentication System:**
+
+- ✅ User registration with password validation
+- ✅ User login with JWT tokens
+- ✅ Session persistence across page refreshes
+- ✅ Authentication middleware for protected routes
+- ✅ Automatic logout on token expiration
+- ✅ Secure password hashing with bcrypt
+
+**Backend API:**
+
+- ✅ Complete Task CRUD operations (Create, Read, Update, Delete)
+- ✅ Complete Project CRUD operations
+- ✅ Task status management (todo, in_progress, completed, blocked)
+- ✅ Task priority levels (low, medium, high, urgent)
+- ✅ Due date tracking with overdue detection
+- ✅ Project-task relationships
+- ✅ Filtering and pagination support
+- ✅ Input validation with Joi
+
+**Frontend Components:**
+
+- ✅ TaskCard component with full functionality
+- ✅ TaskForm component for create/edit
+- ✅ Functional dashboard with real-time statistics
+- ✅ Task and Project Pinia stores
+- ✅ Loading states and error handling
+- ✅ Responsive design for mobile and desktop
+
+**User Interface:**
+
+- ✅ Bilingual support (English/Arabic)
+- ✅ RTL layout support for Arabic
+- ✅ Dark/Light theme toggle
+- ✅ Material Design with Vuetify
+- ✅ Mobile-responsive navigation
+
+**Dashboard:**
+
+- ✅ Real-time task statistics (total, completed, pending, overdue)
+- ✅ Completion progress tracking
+- ✅ Tasks by status breakdown
+- ✅ Tasks by priority breakdown
+- ✅ Recent tasks display
+- ✅ Quick task creation
+
+### 🚧 In Progress (30%)
+
+- 🔄 Dedicated Tasks list view (with search, filtering, sorting)
+- 🔄 Projects management view
+- 🔄 ProjectCard and ProjectForm components
+- 🔄 Advanced filtering UI
+- 🔄 Task and Project detail pages
+
+### ❌ Not Yet Implemented (0%)
+
+- ❌ Testing suite (unit, integration, E2E)
+- ❌ Database migration system
+- ❌ Search functionality in UI
+- ❌ Data export (CSV/JSON)
+- ❌ User profile/settings page
+- ❌ Password reset functionality
+- ❌ Email notifications
+- ❌ Task categories and tags
+- ❌ Multi-user task assignment
+- ❌ Kanban board view
+- ❌ Calendar view
+
+## ✨ Features
 
 ### Authentication
-- User registration with password validation
-- Secure login with JWT tokens
-- Persistent sessions across page refreshes
-- Automatic logout on token expiration
-- Protected routes with authentication middleware
 
-### User Interface
-- Modern Material Design with Vuetify
-- Dark/Light theme toggle
-- Responsive layout for mobile and desktop
-- Bilingual support (English/Arabic)
-- RTL layout support for Arabic
+- **Secure Registration:** Username and password with validation rules
+- **JWT-based Login:** Token-based authentication with expiration
+- **Session Persistence:** Auth state persists across browser sessions
+- **Protected Routes:** Dashboard and features require authentication
+- **Auto-logout:** Automatic logout when token expires
 
 ### Task Management
-- Create, read, update, delete tasks
-- Organize tasks into projects
-- Track task status (todo, in progress, completed, blocked)
-- Set task priorities (low, medium, high, urgent)
-- Add due dates with overdue warnings
-- Quick status updates from task cards
+
+- **Full CRUD:** Create, read, update, and delete tasks
+- **Status Tracking:** Todo, In Progress, Completed, Blocked
+- **Priority Levels:** Low, Medium, High, Urgent
+- **Due Dates:** Set due dates with overdue warnings
+- **Project Assignment:** Organize tasks into projects
+- **Quick Updates:** Change status without opening full form
 
 ### Project Management
-- Create, read, update, delete projects
-- Assign colors to projects for visual organization
-- View task statistics per project
-- Project-based task filtering
+
+- **Project Organization:** Group related tasks together
+- **Color Coding:** Assign colors for visual identification
+- **Task Statistics:** View task counts per project
+- **Relationship Management:** Tasks linked to projects
 
 ### Dashboard
-- Real-time task statistics
-- Completion progress tracking
-- Tasks by status and priority breakdowns
-- Recent tasks display
-- Overdue tasks warnings
 
-## API Endpoints
+- **Statistics Cards:** Total, completed, pending, overdue tasks
+- **Progress Tracking:** Visual completion percentage
+- **Status Breakdown:** Tasks grouped by status
+- **Priority Breakdown:** Tasks grouped by priority
+- **Recent Tasks:** Quick view of latest 5 tasks
+- **Empty States:** Helpful prompts when no tasks exist
 
-### Authentication
-- `POST /register` - Register a new user
-- `POST /login` - Authenticate user and return JWT token
+### User Interface
 
-### Tasks
-- `GET /tasks` - Get all tasks for authenticated user
-- `GET /tasks/:id` - Get a specific task
-- `POST /tasks` - Create a new task
-- `PUT /tasks/:id` - Update a task
-- `DELETE /tasks/:id` - Delete a task
-- `PATCH /tasks/:id/status` - Update task status only
+- **Modern Design:** Material Design with Vuetify 3
+- **Responsive Layout:** Works on mobile, tablet, and desktop
+- **Theme Toggle:** Switch between dark and light modes
+- **Bilingual:** Full English and Arabic translations
+- **RTL Support:** Proper right-to-left layout for Arabic
+- **Loading States:** Visual feedback during operations
 
-### Projects
-- `GET /projects` - Get all projects for authenticated user
-- `GET /projects/:id` - Get a specific project
-- `POST /projects` - Create a new project
-- `PUT /projects/:id` - Update a project
-- `DELETE /projects/:id` - Delete a project
-- `GET /projects/:id/tasks` - Get all tasks in a project
+## 🚀 Installation
 
-### General
-- `GET /` - Server status/hello world
-- `GET /status` - Server status check
+### Prerequisites
 
-## Authentication
+- **Node.js** v16 or higher
+- **npm** or **yarn**
+- **Git**
 
-The application uses JWT (JSON Web Tokens) for authentication:
+### Clone the Repository
 
-1. **Registration:** Users register with username and password
-2. **Login:** Credentials are verified and a JWT token is issued
-3. **Token Storage:** Token is stored in localStorage for persistence
-4. **API Requests:** Token is automatically included in Authorization header
-5. **Token Expiration:** Users are automatically logged out when tokens expire
+```bash
+git clone https://github.com/Omaranwa/Tracking-App.git
+cd Tracking-App
+```
 
-### Authentication Flow
+### Install Dependencies
+
+Install dependencies for root, client, and server:
+
+```bash
+# Root dependencies (concurrently)
+npm install
+
+# Client dependencies
+cd client
+npm install
+cd ..
+
+# Server dependencies
+cd server
+npm install
+cd ..
+```
+
+Or use this one-liner:
+
+```bash
+npm install && cd client && npm install && cd .. && cd server && npm install && cd ..
+```
+
+### Environment Variables
+
+Create `.env` file in the `server` directory:
+
+```env
+PORT=8081
+NODE_ENV=development
+JWT_SECRET=your-super-secret-key-minimum-32-characters-change-in-production
+JWT_EXPIRES_IN=7d
+DB_NAME=tracker
+DB_USER=tracker
+DB_PASS=tracker
+DIALECT=sqlite
+```
+
+Create `.env` file in the `client` directory:
+
+```env
+VITE_API_URL=http://localhost:8081
+```
+
+**Note:** See `server/.env.example` for reference.
+
+## 🏃 Running the Application
+
+### Development Mode (Recommended)
+
+Run both client and server concurrently from the **root directory**:
+
+```bash
+npm run dev
+```
+
+This will:
+
+- Start the backend server on `http://localhost:8081`
+- Start the frontend dev server on `http://localhost:5173` (or next available port)
+- Automatically open the application in your browser
+
+### Separate Development
+
+If you prefer to run client and server in separate terminals:
+
+```bash
+# Terminal 1 - Backend
+cd server
+npm start
+
+# Terminal 2 - Frontend
+cd client
+npm run dev
+```
+
+### Production Build
+
+```bash
+# Build frontend for production
+cd client
+npm run build
+
+# Build will be in client/dist directory
+```
+
+## 🔌 API Endpoints
+
+All protected endpoints require JWT token in Authorization header: `Bearer <token>`
+
+### Authentication (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/register` | Register a new user |
+| POST | `/login` | Login and receive JWT token |
+
+### Tasks (Protected)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/tasks` | Get all user's tasks (supports filters & pagination) |
+| GET | `/tasks/:id` | Get specific task by ID |
+| POST | `/tasks` | Create a new task |
+| PUT | `/tasks/:id` | Update an existing task |
+| DELETE | `/tasks/:id` | Delete a task |
+| PATCH | `/tasks/:id/status` | Update only task status |
+
+**Query Parameters for GET /tasks:**
+
+- `status` - Filter by status (todo, in_progress, completed, blocked)
+- `priority` - Filter by priority (low, medium, high, urgent)
+- `projectId` - Filter by project ID
+- `page` - Page number for pagination (default: 1)
+- `limit` - Items per page (default: 10)
+
+### Projects (Protected)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/projects` | Get all user's projects |
+| GET | `/projects/:id` | Get specific project by ID |
+| POST | `/projects` | Create a new project |
+| PUT | `/projects/:id` | Update an existing project |
+| DELETE | `/projects/:id` | Delete a project (only if no tasks) |
+| GET | `/projects/:id/tasks` | Get all tasks in a project |
+
+### General (Public)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Server hello world |
+| GET | `/status` | Server status check |
+
+### Example API Request
 
 ```javascript
-// Login request
-POST /login
+// Login
+POST http://localhost:8081/login
+Content-Type: application/json
+
 {
   "username": "john_doe",
-  "password": "securePassword123"
+  "password": "SecurePass123"
 }
 
 // Response
@@ -190,120 +358,150 @@ POST /login
     }
   }
 }
+
+// Create Task (with token)
+POST http://localhost:8081/tasks
+Authorization: Bearer <your-jwt-token>
+Content-Type: application/json
+
+{
+  "title": "Complete project documentation",
+  "description": "Write comprehensive README and API docs",
+  "status": "todo",
+  "priority": "high",
+  "dueDate": "2025-10-25",
+  "projectId": 1
+}
 ```
 
-## Security Considerations
-
-- **Password Storage:** Passwords are hashed using bcrypt (10 salt rounds)
-- **JWT Security:** Tokens have expiration and are verified on protected routes
-- **Input Validation:** Joi validation for all API inputs
-- **CORS:** Configured for cross-origin requests
-- **Future Enhancements:** Rate limiting, CSRF protection, input sanitization
-
-## Installation
-
-### Prerequisites
-- Node.js (v16 or higher)
-- npm or yarn
-
-### Clone the repository
-
-```bash
-git clone https://github.com/Omaranwa/Tracking-App.git
-cd Tracking-App
-```
-
-### Install dependencies
-
-Install dependencies for the root, client, and server:
-
-```bash
-npm install          # Root dependencies (concurrently)
-cd client && npm install && cd ..
-cd server && npm install && cd ..
-```
-
-## Running the Application
-
-To run both the client and server concurrently for development, run the following command from the **root project directory**:
-
-```bash
-npm run dev
-```
-
-This will:
-- Start the backend server (usually on port 8081)
-- Start the frontend development server (usually on port 5173)
-- Open the application in your browser
-
-### Separate Development
-
-If you prefer to run the client and server separately:
-
-```bash
-# Terminal 1 - Backend
-cd server
-npm start
-
-# Terminal 2 - Frontend
-cd client
-npm run dev
-```
-
-## Environment Variables
-
-Create a `.env` file in the `server` directory:
-
-```env
-PORT=8081
-NODE_ENV=development
-JWT_SECRET=your-super-secret-key-minimum-32-characters
-JWT_EXPIRES_IN=7d
-DB_NAME=tracker
-DB_USER=tracker
-DB_PASS=tracker
-DIALECT=sqlite
-```
-
-Create a `.env` file in the `client` directory:
-
-```env
-VITE_API_URL=http://localhost:8081
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 Tracking-App/
 ├── client/                      # Vue.js Frontend
 │   ├── src/
 │   │   ├── assets/             # Images, styles, icons
-│   │   ├── components/         # Reusable components (TaskCard, TaskForm)
-│   │   ├── locales/            # i18n files (en.json, ar.json)
-│   │   ├── router/             # Vue Router configuration
-│   │   ├── services/           # API services (Api, AuthenticationService, TaskService, ProjectService)
-│   │   ├── stores/             # Pinia stores (auth, tasks, projects)
-│   │   ├── views/              # Page components (HomeView, LoginView, RegisterView, AboutView)
-│   │   ├── App.vue             # Root component
-│   │   └── main.js             # App initialization
-│   └── package.json            # Frontend dependencies
+│   │   ├── components/         # Reusable components
+│   │   │   ├── TaskCard.vue    # Task display component ✅
+│   │   │   ├── TaskForm.vue    # Task create/edit form ✅
+│   │   │   └── icons/          # Icon components
+│   │   ├── locales/            # i18n translations
+│   │   │   ├── en.json         # English translations ✅
+│   │   │   └── ar.json         # Arabic translations ✅
+│   │   ├── router/             # Vue Router config
+│   │   │   └── index.js        # Route definitions ✅
+│   │   ├── services/           # API communication
+│   │   │   ├── Api.js          # Axios instance ✅
+│   │   │   ├── AuthenticationService.js ✅
+│   │   │   ├── TaskService.js  # Task API calls ✅
+│   │   │   └── ProjectService.js # Project API calls ✅
+│   │   ├── stores/             # Pinia state management
+│   │   │   ├── auth.js         # Auth store ✅
+│   │   │   ├── tasks.js        # Task store ✅
+│   │   │   └── projects.js     # Project store ✅
+│   │   ├── views/              # Page components
+│   │   │   ├── HomeView.vue    # Dashboard ✅
+│   │   │   ├── LoginView.vue   # Login page ✅
+│   │   │   ├── RegisterView.vue # Register page ✅
+│   │   │   └── AboutView.vue   # About page (minimal)
+│   │   ├── App.vue             # Root component ✅
+│   │   └── main.js             # App initialization ✅
+│   ├── package.json            # Frontend dependencies
+│   └── vite.config.js          # Vite configuration
 │
 ├── server/                      # Express.js Backend
 │   ├── src/
-│   │   ├── config/             # Configuration
-│   │   ├── controllers/        # Business logic (AuthenticationController, TaskController, ProjectController)
-│   │   ├── middleware/         # Custom middleware (authentication)
-│   │   ├── models/             # Sequelize models (User, Task, Project)
-│   │   ├── policies/           # Validation middleware (AuthenticationControllerPolicy, TaskControllerPolicy, ProjectControllerPolicy)
-│   │   ├── app.js              # Express app setup
-│   │   └── routes.js           # Route definitions
-│   └── package.json            # Backend dependencies
+│   │   ├── config/
+│   │   │   └── config.js       # App configuration ✅
+│   │   ├── controllers/        # Business logic
+│   │   │   ├── AuthenticationController.js ✅
+│   │   │   ├── TaskController.js # Task CRUD ✅
+│   │   │   └── ProjectController.js # Project CRUD ✅
+│   │   ├── middleware/
+│   │   │   └── authentication.js # JWT middleware ✅
+│   │   ├── models/             # Sequelize models
+│   │   │   ├── index.js        # Model initialization ✅
+│   │   │   ├── User.js         # User model ✅
+│   │   │   ├── Task.js         # Task model ✅
+│   │   │   └── Project.js      # Project model ✅
+│   │   ├── policies/           # Validation middleware
+│   │   │   ├── AuthenticationControllerPolicy.js ✅
+│   │   │   ├── TaskControllerPolicy.js ✅
+│   │   │   └── ProjectControllerPolicy.js ✅
+│   │   ├── app.js              # Express app setup ✅
+│   │   └── routes.js           # Route definitions ✅
+│   ├── package.json            # Backend dependencies
+│   └── .env.example            # Environment variables template
 │
-├── package.json                 # Root package with concurrently script
-└── README.md                    # This file
+├── package.json                 # Root package (concurrently)
+├── README.md                    # This file
+└── .gitignore                  # Git ignore rules
 ```
 
-## Contributing
+## 🔐 Authentication
+
+### Authentication Flow
+
+1. **Registration:**
+   - User provides username and password
+   - Password is validated (min 8 chars, must contain uppercase, lowercase, and number)
+   - Password is hashed with bcrypt (10 salt rounds)
+   - User record is created in database
+
+2. **Login:**
+   - User provides credentials
+   - Password is verified using bcrypt.compare()
+   - JWT token is generated with 7-day expiration
+   - Token is sent to client
+
+3. **Token Storage:**
+   - Client stores token in localStorage
+   - Auth store maintains login state
+
+4. **Protected Routes:**
+   - Client router checks auth status before allowing access
+   - API requests include token in Authorization header
+   - Server middleware verifies token for protected endpoints
+
+5. **Token Expiration:**
+   - Expired tokens are rejected by server
+   - Client automatically logs out user
+
+### Password Requirements
+
+- Minimum 8 characters
+- Maximum 32 characters
+- Must contain at least one lowercase letter
+- Must contain at least one uppercase letter
+- Must contain at least one number
+
+### Username Requirements
+
+- 6-30 alphanumeric characters
+- Must be unique
+
+## 🔒 Security
+
+Current security measures:
+
+- ✅ **Password Hashing:** bcrypt with 10 salt rounds
+- ✅ **JWT Authentication:** Tokens with expiration
+- ✅ **Input Validation:** Joi validation on all inputs
+- ✅ **CORS:** Configured for cross-origin requests
+- ✅ **Auth Middleware:** Protects sensitive endpoints
+
+Planned security enhancements:
+
+- ⏳ Rate limiting (express-rate-limit)
+- ⏳ Security headers (Helmet.js)
+- ⏳ Input sanitization (XSS protection)
+- ⏳ CSRF protection
+- ⏳ Environment variable validation
+- ⏳ SQL injection prevention (enhanced)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -313,37 +511,69 @@ Tracking-App/
 
 ### Code Style
 
-- Use ESLint and Prettier for code formatting
-- Follow Vue.js style guide
-- Write meaningful commit messages
-- Add comments for complex logic
+- **Frontend:** Follow Vue.js style guide, use ESLint and Prettier
+- **Backend:** Use ESLint, follow Airbnb style guide
+- **Commits:** Write clear, meaningful commit messages
+- **Comments:** Add JSDoc comments for functions
+- **Testing:** Write tests for new features (when testing is set up)
 
-## Installation
+## 🗺️ Roadmap
 
-### Clone the repository
+### Phase 4: Additional Views (In Progress - 30%)
 
-```git clone https://github.com/Omaranwa/Tracking-App.git```
+- [ ] Tasks list view with filtering and sorting
+- [ ] Projects management view
+- [ ] Task and Project detail pages
+- [ ] Search functionality in UI
+- [ ] Navigation menu updates
 
-### Install dependencies
+### Phase 5: Testing & Quality (Not Started)
 
-Install dependencies for the root, client, and server:
+- [ ] Backend unit tests (Jest)
+- [ ] Frontend unit tests (Vitest)
+- [ ] Component tests
+- [ ] Integration tests
+- [ ] E2E tests (Cypress/Playwright)
+- [ ] CI/CD pipeline
 
-```bash
-npm install # Installs root dependencies (like concurrently)
-cd client && npm install && cd ..
-cd server && npm install && cd ..
-```
+### Phase 6: Production Readiness (Not Started)
 
-## Running the application
+- [ ] Database migrations system
+- [ ] PostgreSQL/MySQL migration
+- [ ] Rate limiting and security hardening
+- [ ] Performance optimization
+- [ ] API documentation (Swagger)
+- [ ] Deployment documentation
 
-To run both the client and server concurrently for development, run the following command from the **root project directory**:
+### Future Enhancements
 
-```bash
-npm run dev
-```
+- [ ] Task categories and tags
+- [ ] Multi-user collaboration
+- [ ] Email notifications
+- [ ] Data export (CSV/JSON)
+- [ ] Kanban board view
+- [ ] Calendar view
+- [ ] File attachments
+- [ ] Task comments
+- [ ] User profile management
+- [ ] Password reset functionality
+- [ ] Mobile app (React Native)
 
-This will:
-*   Start the backend server (usually on port 8081).
-*   Start the frontend development server (usually on a port like 5173) and provide a link to open in your browser.
+## 📄 License
 
-*(Previously, you would run `npm start` in the `server` directory and `npm run dev` in the `client` directory in separate terminals. The `npm run dev` command in the root now handles both.)*
+This project is licensed under the MIT License.
+
+## 👤 Author
+
+**Omar Anwar**
+
+## 🙏 Acknowledgments
+
+- Vue.js team for the amazing framework
+- Vuetify team for the Material Design components
+- Express.js community
+- All open-source contributors
+
+---
+
+**Status:** Active Development | **Version:** 0.8.0 | **Last Updated:** October 2025
