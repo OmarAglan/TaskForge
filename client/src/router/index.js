@@ -25,6 +25,19 @@ const router = createRouter({
       }
     },
     {
+      path: '/tasks',
+      name: 'tasks',
+      component: TasksView,
+      beforeEnter: (to, from, next) => {
+        const authStore = useAuthStore()
+        if (authStore.isLoggedIn) {
+          next()
+        } else {
+          next({ name: 'login' })
+        }
+      }
+    },
+    {
       path: '/about',
       name: 'about',
       // route level code-splitting
