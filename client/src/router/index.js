@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import AboutView from '../views/AboutView.vue'
 import HomeView from '../views/HomeView.vue'
 import RegisterView from '../views/RegisterView.vue'
+import TasksView from '../views/TasksView.vue'
 import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
