@@ -53,16 +53,16 @@ export class User {
   updatedAt: Date;
 
   // Relations
-  @OneToMany(() => 'Team', (team: any) => team.owner)
+  @OneToMany('Team', (team: any) => team.owner)
   ownedTeams: any[];
 
-  @OneToMany(() => 'TeamMember', (teamMember: any) => teamMember.user)
+  @OneToMany('TeamMember', (teamMember: any) => teamMember.user)
   teamMemberships: any[];
 
-  @OneToMany(() => 'Task', (task: any) => task.createdBy)
+  @OneToMany('Task', (task: any) => task.createdBy)
   createdTasks: any[];
 
-  @OneToMany(() => 'Task', (task: any) => task.assignedTo)
+  @OneToMany('Task', (task: any) => task.assignedTo)
   assignedTasks: any[];
 
   // Hash password before inserting
