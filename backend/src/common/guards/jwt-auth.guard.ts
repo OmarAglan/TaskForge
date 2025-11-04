@@ -1,7 +1,7 @@
 import {
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
+    ExecutionContext,
+    Injectable,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
@@ -9,30 +9,30 @@ import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  constructor(private reflector: Reflector) {
-    super();
-  }
-
-  canActivate(context: ExecutionContext) {
-    // Check if route is marked as public
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
-
-    if (isPublic) {
-      return true;
+    constructor(private reflector: Reflector) {
+        super();
     }
 
-    // Call the parent AuthGuard canActivate method
-    return super.canActivate(context);
-  }
+    canActivate(context: ExecutionContext) {
+        // Check if route is marked as public
+        const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+            context.getHandler(),
+            context.getClass(),
+        ]);
 
-  handleRequest(err: any, user: any, info: any) {
-    // Handle errors or missing user
-    if (err || !user) {
-      throw err || new UnauthorizedException('Invalid or missing token');
+        if (isPublic) {
+            return true;
+        }
+
+        // Call the parent AuthGuard canActivate method
+        return super.canActivate(context);
     }
-    return user;
-  }
+
+    handleRequest(err: any, user: any, info: any) {
+        // Handle errors or missing user
+        if (err || !user) {
+            throw err || new UnauthorizedException('Invalid or missing token');
+        }
+        return user;
+    }
 }
