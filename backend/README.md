@@ -203,6 +203,452 @@ GET http://localhost:3000/api/v1
 }
 ```
 
+---
+
+## 🔐 Authentication Endpoints
+
+### Register a New User
+
+Create a new user account.
+
+**Endpoint:** `POST /api/v1/auth/register`
+**Access:** Public
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "Password@123",
+  "firstName": "John",
+  "lastName": "Doe"
+}
+```
+
+**Validation Rules:**
+- Email: Valid email format
+- Password: Minimum 8 characters, must contain uppercase, lowercase, number, and special character
+- First Name: Minimum 2 characters
+- Last Name: Minimum 2 characters
+
+**Success Response (201 Created):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "member",
+      "avatarUrl": null,
+      "createdAt": "2025-11-04T06:00:00.000Z",
+      "updatedAt": "2025-11-04T06:00:00.000Z"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@taskforge.com",
+    "password": "Admin@123",
+    "firstName": "Admin",
+    "lastName": "User"
+  }'
+```
+
+---
+
+### Login
+
+Authenticate a user and receive tokens.
+
+**Endpoint:** `POST /api/v1/auth/login`
+**Access:** Public
+
+**Request Body:**
+
+```json
+{
+  "email": "user@example.com",
+  "password": "Password@123"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "user": {
+      "id": "uuid",
+      "email": "user@example.com",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "member",
+      "avatarUrl": null,
+      "createdAt": "2025-11-04T06:00:00.000Z",
+      "updatedAt": "2025-11-04T06:00:00.000Z"
+    },
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@taskforge.com",
+    "password": "Admin@123"
+  }'
+```
+
+---
+
+### Refresh Token
+
+Get a new access token using a refresh token.
+
+**Endpoint:** `POST /api/v1/auth/refresh`
+**Access:** Public
+
+**Request Body:**
+
+```json
+{
+  "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/refresh \
+  -H "Content-Type: application/json" \
+  -d '{
+    "refreshToken": "your-refresh-token-here"
+  }'
+```
+
+---
+
+### Logout
+
+Logout the current user (invalidate tokens on client-side).
+
+**Endpoint:** `POST /api/v1/auth/logout`
+**Access:** Protected (requires JWT)
+
+**Headers:**
+
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Logout successful"
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X POST http://localhost:3000/api/v1/auth/logout \
+  -H "Authorization: Bearer your-access-token-here"
+```
+
+---
+
+### Get Current User Profile
+
+Get the profile of the currently authenticated user.
+
+**Endpoint:** `GET /api/v1/auth/profile`
+**Access:** Protected (requires JWT)
+
+**Headers:**
+
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "member",
+    "avatarUrl": null,
+    "createdAt": "2025-11-04T06:00:00.000Z",
+    "updatedAt": "2025-11-04T06:00:00.000Z"
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl http://localhost:3000/api/v1/auth/profile \
+  -H "Authorization: Bearer your-access-token-here"
+```
+
+---
+
+## 👤 User Management Endpoints
+
+### Get My Profile
+
+Get your own user profile.
+
+**Endpoint:** `GET /api/v1/users/me`
+**Access:** Protected (requires JWT)
+
+**Headers:**
+
+```
+Authorization: Bearer <access-token>
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "member",
+    "avatarUrl": null,
+    "createdAt": "2025-11-04T06:00:00.000Z",
+    "updatedAt": "2025-11-04T06:00:00.000Z"
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+---
+
+### Update My Profile
+
+Update your own profile information.
+
+**Endpoint:** `PATCH /api/v1/users/me`
+**Access:** Protected (requires JWT)
+
+**Headers:**
+
+```
+Authorization: Bearer <access-token>
+```
+
+**Request Body:**
+
+```json
+{
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "avatarUrl": "https://example.com/avatar.jpg"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "uuid",
+    "email": "user@example.com",
+    "firstName": "Jane",
+    "lastName": "Smith",
+    "role": "member",
+    "avatarUrl": "https://example.com/avatar.jpg",
+    "createdAt": "2025-11-04T06:00:00.000Z",
+    "updatedAt": "2025-11-04T06:30:00.000Z"
+  },
+  "timestamp": "2025-11-04T06:30:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X PATCH http://localhost:3000/api/v1/users/me \
+  -H "Authorization: Bearer your-access-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "firstName": "Jane",
+    "lastName": "Smith"
+  }'
+```
+
+---
+
+### Change Password
+
+Change your account password.
+
+**Endpoint:** `PATCH /api/v1/users/me/password`
+**Access:** Protected (requires JWT)
+
+**Headers:**
+
+```
+Authorization: Bearer <access-token>
+```
+
+**Request Body:**
+
+```json
+{
+  "currentPassword": "OldPassword@123",
+  "newPassword": "NewPassword@456"
+}
+```
+
+**Success Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "message": "Password changed successfully"
+  },
+  "timestamp": "2025-11-04T06:00:00.000Z"
+}
+```
+
+**Example:**
+
+```bash
+curl -X PATCH http://localhost:3000/api/v1/users/me/password \
+  -H "Authorization: Bearer your-access-token-here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "currentPassword": "Admin@123",
+    "newPassword": "NewAdmin@456"
+  }'
+```
+
+---
+
+## 🔑 Authentication System
+
+### Token Management
+
+The authentication system uses JWT (JSON Web Tokens) with two types of tokens:
+
+1. **Access Token**
+   - Short-lived (15 minutes)
+   - Used for API requests
+   - Include in `Authorization: Bearer <token>` header
+   
+2. **Refresh Token**
+   - Long-lived (7 days)
+   - Used to obtain new access tokens
+   - Should be stored securely
+
+### Token Flow
+
+```
+1. User logs in → Receives access token + refresh token
+2. Client stores tokens securely
+3. Client includes access token in API requests
+4. When access token expires → Use refresh token to get new tokens
+5. When refresh token expires → User must login again
+```
+
+### User Roles
+
+The system supports role-based access control with the following roles:
+
+- **OWNER**: Full system access, can delete teams
+- **ADMIN**: Manage team settings and members
+- **TEAM_LEAD**: Can add members and assign tasks
+- **MEMBER**: Basic task management
+
+### Security Features
+
+- ✅ Password hashing with bcrypt (12 rounds)
+- ✅ JWT token authentication
+- ✅ Token expiration and refresh mechanism
+- ✅ Role-based access control (RBAC)
+- ✅ Input validation with class-validator
+- ✅ Rate limiting for API endpoints
+- ✅ Secure HTTP headers with Helmet
+- ✅ CORS protection
+
+### Error Responses
+
+All error responses follow this format:
+
+```json
+{
+  "success": false,
+  "error": {
+    "statusCode": 401,
+    "message": "Invalid credentials",
+    "error": "Unauthorized",
+    "timestamp": "2025-11-04T06:00:00.000Z",
+    "path": "/api/v1/auth/login"
+  }
+}
+```
+
+Common HTTP Status Codes:
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request (validation error)
+- `401` - Unauthorized (authentication required)
+- `403` - Forbidden (insufficient permissions)
+- `404` - Not Found
+- `409` - Conflict (duplicate resource)
+- `500` - Internal Server Error
+
 ## 🧪 Testing
 
 ### Run Unit Tests
