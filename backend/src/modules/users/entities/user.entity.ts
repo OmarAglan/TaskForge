@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
@@ -50,6 +51,19 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
   updatedAt: Date;
+
+  // Relations
+  @OneToMany(() => 'Team', (team: any) => team.owner)
+  ownedTeams: any[];
+
+  @OneToMany(() => 'TeamMember', (teamMember: any) => teamMember.user)
+  teamMemberships: any[];
+
+  @OneToMany(() => 'Task', (task: any) => task.createdBy)
+  createdTasks: any[];
+
+  @OneToMany(() => 'Task', (task: any) => task.assignedTo)
+  assignedTasks: any[];
 
   // Hash password before inserting
   @BeforeInsert()
