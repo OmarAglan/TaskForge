@@ -12,7 +12,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { FilterTasksDto } from './dto/filter-tasks.dto';
 import { TeamMember, TeamRole } from '../teams/entities/team-member.entity';
 
-interface PaginatedResult<T> {
+export interface PaginatedResult<T> {
   items: T[];
   total: number;
   page: number;
@@ -20,7 +20,7 @@ interface PaginatedResult<T> {
   totalPages: number;
 }
 
-interface TaskStats {
+export interface TaskStats {
   totalTasks: number;
   todoTasks: number;
   inProgressTasks: number;

@@ -173,3 +173,55 @@ export class TasksController {
     };
   }
 }
+
+/**
+ * Team-specific task endpoints
+ */
+@Controller('teams/:teamId/tasks')
+@UseGuards(JwtAuthGuard)
+export class TeamTasksController {
+  constructor(private readonly tasksService: TasksService) {}
+
+  /**
+   * GET /teams/:teamId/tasks
+   * Get all tasks for a specific team
+   */
+  @Get()
+  async getTeamTasks(
+    @Param('teamId') teamId: string,
+    @CurrentUser('id') userId: string,
+    @Query() filterDto: FilterTasksDto,
+  ) {
+    const result = await this.tasksService.getTasksByTeam(
+      teamId,
+      userId,
+      filterDto,
+    );
+    return {
+      success: true,
+      data: {
+        items: result.items,
+        total: result.total,
+        page: result.page,
+        limit: result.limit,
+        totalPages: result.totalPages,
+      },
+    };
+  }
+
+  /**
+   * GET /teams/:teamId/tasks/stats
+   * Get task statistics for a team
+   */
+  @Get('stats')
+  async getTeamTaskStats(
+    @Param('teamId') teamId: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const stats = await this.tasksService.getTaskStats(teamId, userId);
+    return {
+      success: true,
+      data: stats,
+    };
+  }
+}
