@@ -8,6 +8,8 @@ import { AppService } from './app.service';
 import { appConfig, databaseConfig, jwtConfig } from './config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { TeamsModule } from './modules/teams/teams.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -63,9 +65,9 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     // Feature Modules
     AuthModule,
     UsersModule,
+    TeamsModule,
+    TasksModule,
     // Future modules:
-    // TeamsModule,
-    // TasksModule,
     // AnalyticsModule,
     // NotificationsModule,
   ],
