@@ -707,9 +707,9 @@ npx tsc --noEmit
 backend/
 ├── src/
 │   ├── common/              # Shared utilities
-│   │   ├── decorators/      # Custom decorators
+│   │   ├── decorators/      # Custom decorators (@CurrentUser, @Public, @Roles)
 │   │   ├── filters/         # Exception filters
-│   │   ├── guards/          # Auth guards
+│   │   ├── guards/          # Auth guards (JWT, Roles)
 │   │   ├── interceptors/    # Response interceptors
 │   │   └── pipes/           # Validation pipes
 │   ├── config/              # Configuration modules
@@ -717,7 +717,32 @@ backend/
 │   │   ├── database.config.ts # Database configuration
 │   │   ├── jwt.config.ts    # JWT configuration
 │   │   └── index.ts         # Config exports
-│   ├── modules/             # Feature modules (Phase 3+)
+│   ├── modules/             # Feature modules
+│   │   ├── auth/            # Authentication module
+│   │   │   ├── dto/         # Login, Register, RefreshToken DTOs
+│   │   │   ├── strategies/  # JWT & Refresh strategies
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.service.ts
+│   │   │   └── auth.module.ts
+│   │   ├── users/           # User management module
+│   │   │   ├── dto/         # UpdateUser, ChangePassword DTOs
+│   │   │   ├── entities/    # User entity
+│   │   │   ├── users.controller.ts
+│   │   │   ├── users.service.ts
+│   │   │   └── users.module.ts
+│   │   ├── teams/           # Teams management module
+│   │   │   ├── dto/         # CreateTeam, UpdateTeam, AddMember, UpdateMemberRole DTOs
+│   │   │   ├── entities/    # Team, TeamMember entities
+│   │   │   ├── helpers/     # Team permissions helper
+│   │   │   ├── teams.controller.ts
+│   │   │   ├── teams.service.ts
+│   │   │   └── teams.module.ts
+│   │   └── tasks/           # Tasks management module
+│   │       ├── dto/         # CreateTask, UpdateTask, FilterTasks DTOs
+│   │       ├── entities/    # Task entity
+│   │       ├── tasks.controller.ts
+│   │       ├── tasks.service.ts
+│   │       └── tasks.module.ts
 │   ├── app.module.ts        # Root module
 │   ├── app.controller.ts    # Root controller
 │   ├── app.service.ts       # Root service
@@ -789,11 +814,10 @@ backend/
 - ✅ **Phase 1**: Foundation setup (COMPLETED)
 - ✅ **Phase 2**: Backend foundation (COMPLETED)
 - ✅ **Phase 3**: Authentication & Authorization (COMPLETED)
-- 🔜 **Phase 4**: Teams Module
-- 🔜 **Phase 5**: Tasks Module
-- 🔜 **Phase 6**: Real-time Features (WebSocket)
-- 🔜 **Phase 7**: Analytics Module
-- 🔜 **Phase 8**: Testing & Deployment
+- ✅ **Phase 4**: Core API - Teams & Tasks CRUD (COMPLETED)
+- 🔜 **Phase 5**: Real-time Features (WebSocket)
+- 🔜 **Phase 6**: Analytics Module
+- 🔜 **Phase 7**: Testing & Deployment
 
 ### Phase 3 Completed Features
 
@@ -808,6 +832,23 @@ backend/
 - ✅ Global Exception Filters
 - ✅ Response Transformation Interceptors
 - ✅ Comprehensive API documentation
+
+### Phase 4 Completed Features
+
+- ✅ Team Entity with owner relationship
+- ✅ TeamMember Entity with composite unique constraint
+- ✅ Task Entity with full relationships
+- ✅ Team CRUD operations with permission system
+- ✅ Team member management (add, remove, update roles)
+- ✅ Task CRUD operations with advanced filtering
+- ✅ Task assignment and status management
+- ✅ Team-specific task endpoints
+- ✅ Task statistics and analytics foundation
+- ✅ Permission helpers for team operations
+- ✅ Comprehensive filtering and pagination
+- ✅ Search functionality for tasks
+- ✅ Updated User entity with all relations
+- ✅ Complete API documentation (see [API-TEAMS-TASKS.md](./API-TEAMS-TASKS.md))
 
 ## 📚 Additional Resources
 
