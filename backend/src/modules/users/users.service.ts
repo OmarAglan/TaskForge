@@ -3,6 +3,8 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,12 +12,18 @@ import { User } from './entities/user.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { RegisterDto } from '../auth/dto/register.dto';
+import { ActivityService } from '../activity/activity.service';
+import { ActivityAction } from '../activity/enums/activity-action.enum';
+import { EntityType } from '../activity/enums/entity-type.enum';
+import { buildUserMetadata } from '../activity/helpers/metadata-builder.helper';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(forwardRef(() => ActivityService))
+    private readonly activityService: ActivityService,
   ) {}
 
   /**
@@ -57,18 +65,39 @@ export class UsersService {
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
     const user = await this.findById(id);
 
-    // Update user fields
-    if (updateUserDto.firstName) {
+    // Track changes
+    const changes: any = {};
+    if (updateUserDto.firstName && updateUserDto.firstName !== user.firstName) {
+      changes.firstName = { old: user.firstName, new: updateUserDto.firstName };
       user.firstName = updateUserDto.firstName;
     }
-    if (updateUserDto.lastName) {
+    if (updateUserDto.lastName && updateUserDto.lastName !== user.lastName) {
+      changes.lastName = { old: user.lastName, new: updateUserDto.lastName };
       user.lastName = updateUserDto.lastName;
     }
-    if (updateUserDto.avatarUrl !== undefined) {
+    if (updateUserDto.avatarUrl !== undefined && updateUserDto.avatarUrl !== user.avatarUrl) {
+      changes.avatarUrl = { old: user.avatarUrl, new: updateUserDto.avatarUrl };
       user.avatarUrl = updateUserDto.avatarUrl;
     }
 
-    return this.userRepository.save(user);
+    const updatedUser = await this.userRepository.save(user);
+
+    // Log user update activity
+    if (Object.keys(changes).length > 0) {
+      try {
+        await this.activityService.log({
+          userId: user.id,
+          action: ActivityAction.USER_UPDATE,
+          entityType: EntityType.USER,
+          entityId: user.id,
+          metadata: buildUserMetadata(user, changes),
+        });
+      } catch (error) {
+        console.error('Failed to log user update activity:', error);
+      }
+    }
+
+    return updatedUser;
   }
 
   /**
@@ -108,6 +137,22 @@ export class UsersService {
     // Update password (will be hashed by BeforeUpdate hook)
     user.password = changePasswordDto.newPassword;
     await this.userRepository.save(user);
+
+    // Log password change activity
+    try {
+      await this.activityService.log({
+        userId: user.id,
+        action: ActivityAction.PASSWORD_CHANGE,
+        entityType: EntityType.USER,
+        entityId: user.id,
+        metadata: {
+          email: user.email,
+          changedAt: new Date().toISOString(),
+        },
+      });
+    } catch (error) {
+      console.error('Failed to log password change activity:', error);
+    }
   }
 
   /**

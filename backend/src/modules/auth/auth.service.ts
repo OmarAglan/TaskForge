@@ -2,6 +2,8 @@ import {
   Injectable,
   UnauthorizedException,
   BadRequestException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +11,9 @@ import { UsersService } from '../users/users.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from '../users/entities/user.entity';
+import { ActivityService } from '../activity/activity.service';
+import { ActivityAction } from '../activity/enums/activity-action.enum';
+import { buildAuthMetadata } from '../activity/helpers/metadata-builder.helper';
 
 export interface AuthTokens {
   accessToken: string;
@@ -27,6 +32,8 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => ActivityService))
+    private readonly activityService: ActivityService,
   ) {}
 
   /**
@@ -38,6 +45,17 @@ export class AuthService {
 
     // Generate tokens
     const tokens = await this.generateTokens(user);
+
+    // Log registration activity
+    try {
+      await this.activityService.log({
+        userId: user.id,
+        action: ActivityAction.REGISTER,
+        metadata: buildAuthMetadata('register', user.email),
+      });
+    } catch (error) {
+      console.error('Failed to log registration activity:', error);
+    }
 
     return {
       user,
@@ -58,6 +76,17 @@ export class AuthService {
 
     // Generate tokens
     const tokens = await this.generateTokens(user);
+
+    // Log login activity
+    try {
+      await this.activityService.log({
+        userId: user.id,
+        action: ActivityAction.LOGIN,
+        metadata: buildAuthMetadata('login', user.email),
+      });
+    } catch (error) {
+      console.error('Failed to log login activity:', error);
+    }
 
     return {
       user,
@@ -115,7 +144,18 @@ export class AuthService {
     // For now, this is handled client-side by removing tokens
     
     // Verify user exists
-    await this.usersService.findById(userId);
+    const user = await this.usersService.findById(userId);
+    
+    // Log logout activity
+    try {
+      await this.activityService.log({
+        userId: user.id,
+        action: ActivityAction.LOGOUT,
+        metadata: buildAuthMetadata('logout', user.email),
+      });
+    } catch (error) {
+      console.error('Failed to log logout activity:', error);
+    }
     
     // Future enhancement: Store and invalidate refresh tokens
     return;
