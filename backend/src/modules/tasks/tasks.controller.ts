@@ -18,6 +18,9 @@ import { FilterTasksDto } from './dto/filter-tasks.dto';
 import { TaskStatus } from './entities/task.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { LogActivity } from '../../common/decorators/log-activity.decorator';
+import { ActivityAction } from '../activity/enums/activity-action.enum';
+import { EntityType } from '../activity/enums/entity-type.enum';
 
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
@@ -30,6 +33,7 @@ export class TasksController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @LogActivity(ActivityAction.TASK_CREATE, EntityType.TASK)
   async create(
     @CurrentUser('id') userId: string,
     @Body() createTaskDto: CreateTaskDto,
@@ -107,6 +111,7 @@ export class TasksController {
    * Update a task
    */
   @Patch(':id')
+  @LogActivity(ActivityAction.TASK_UPDATE, EntityType.TASK)
   async update(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -126,6 +131,7 @@ export class TasksController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @LogActivity(ActivityAction.TASK_DELETE, EntityType.TASK)
   async remove(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -142,6 +148,7 @@ export class TasksController {
    * Assign a task to a user
    */
   @Patch(':id/assign')
+  @LogActivity(ActivityAction.TASK_ASSIGN, EntityType.TASK)
   async assignTask(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -160,6 +167,7 @@ export class TasksController {
    * Update task status
    */
   @Patch(':id/status')
+  @LogActivity(ActivityAction.TASK_STATUS_CHANGE, EntityType.TASK)
   async updateStatus(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,

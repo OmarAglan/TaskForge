@@ -17,6 +17,9 @@ import { AddMemberDto } from './dto/add-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { LogActivity } from '../../common/decorators/log-activity.decorator';
+import { ActivityAction } from '../activity/enums/activity-action.enum';
+import { EntityType } from '../activity/enums/entity-type.enum';
 
 @Controller('teams')
 @UseGuards(JwtAuthGuard)
@@ -29,6 +32,7 @@ export class TeamsController {
    */
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @LogActivity(ActivityAction.TEAM_CREATE, EntityType.TEAM)
   async create(
     @CurrentUser('id') userId: string,
     @Body() createTeamDto: CreateTeamDto,
@@ -75,6 +79,7 @@ export class TeamsController {
    * Update team details
    */
   @Patch(':id')
+  @LogActivity(ActivityAction.TEAM_UPDATE, EntityType.TEAM)
   async update(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -94,6 +99,7 @@ export class TeamsController {
    */
   @Delete(':id')
   @HttpCode(HttpStatus.OK)
+  @LogActivity(ActivityAction.TEAM_DELETE, EntityType.TEAM)
   async remove(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -127,6 +133,7 @@ export class TeamsController {
    */
   @Post(':id/members')
   @HttpCode(HttpStatus.CREATED)
+  @LogActivity(ActivityAction.TEAM_MEMBER_ADD, EntityType.TEAM_MEMBER)
   async addMember(
     @Param('id') id: string,
     @CurrentUser('id') userId: string,
@@ -146,6 +153,7 @@ export class TeamsController {
    */
   @Delete(':id/members/:memberId')
   @HttpCode(HttpStatus.OK)
+  @LogActivity(ActivityAction.TEAM_MEMBER_REMOVE, EntityType.TEAM_MEMBER)
   async removeMember(
     @Param('id') id: string,
     @Param('memberId') memberId: string,
@@ -163,6 +171,7 @@ export class TeamsController {
    * Update a member's role
    */
   @Patch(':id/members/:memberId/role')
+  @LogActivity(ActivityAction.TEAM_MEMBER_ROLE_UPDATE, EntityType.TEAM_MEMBER)
   async updateMemberRole(
     @Param('id') id: string,
     @Param('memberId') memberId: string,
