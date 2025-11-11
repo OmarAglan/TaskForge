@@ -6,7 +6,8 @@ Full Stack Project Management Application - NestJS Backend API
 
 - **NestJS Framework**: Modular, scalable architecture with TypeScript
 - **PostgreSQL Database**: TypeORM integration with full entity relationships
-- **JWT Authentication**: Secure authentication with access and refresh tokens (ready for Phase 3)
+- **JWT Authentication**: Secure authentication with access and refresh tokens
+- **Activity Logging & Audit System**: Comprehensive activity tracking for security and analytics
 - **WebSocket Support**: Real-time updates via Socket.io (ready for Phase 8)
 - **Rate Limiting**: Protection against brute force attacks
 - **Security**: Helmet.js, CORS, input validation
@@ -737,12 +738,21 @@ backend/
 │   │   │   ├── teams.controller.ts
 │   │   │   ├── teams.service.ts
 │   │   │   └── teams.module.ts
-│   │   └── tasks/           # Tasks management module
-│   │       ├── dto/         # CreateTask, UpdateTask, FilterTasks DTOs
-│   │       ├── entities/    # Task entity
-│   │       ├── tasks.controller.ts
-│   │       ├── tasks.service.ts
-│   │       └── tasks.module.ts
+│   │   ├── tasks/           # Tasks management module
+│   │   │   ├── dto/         # CreateTask, UpdateTask, FilterTasks DTOs
+│   │   │   ├── entities/    # Task entity
+│   │   │   ├── tasks.controller.ts
+│   │   │   ├── tasks.service.ts
+│   │   │   └── tasks.module.ts
+│   │   └── activity/        # Activity logging module
+│   │       ├── dto/         # CreateActivityLog, FilterActivityLogs DTOs
+│   │       ├── entities/    # ActivityLog entity
+│   │       ├── enums/       # ActivityAction, EntityType enums
+│   │       ├── helpers/     # Metadata builders, analytics helpers
+│   │       ├── interfaces/  # Activity interfaces
+│   │       ├── activity.controller.ts
+│   │       ├── activity.service.ts
+│   │       └── activity.module.ts
 │   ├── app.module.ts        # Root module
 │   ├── app.controller.ts    # Root controller
 │   ├── app.service.ts       # Root service
@@ -815,9 +825,11 @@ backend/
 - ✅ **Phase 2**: Backend foundation (COMPLETED)
 - ✅ **Phase 3**: Authentication & Authorization (COMPLETED)
 - ✅ **Phase 4**: Core API - Teams & Tasks CRUD (COMPLETED)
-- 🔜 **Phase 5**: Real-time Features (WebSocket)
-- 🔜 **Phase 6**: Analytics Module
-- 🔜 **Phase 7**: Testing & Deployment
+- ✅ **Phase 5**: Activity Logging & Audit System (COMPLETED)
+- 🔜 **Phase 6-7**: Frontend Implementation
+- 🔜 **Phase 8**: Real-time Features (WebSocket)
+- 🔜 **Phase 9**: Analytics Dashboard
+- 🔜 **Phase 10**: Testing & Deployment
 
 ### Phase 3 Completed Features
 
@@ -850,12 +862,80 @@ backend/
 - ✅ Updated User entity with all relations
 - ✅ Complete API documentation (see [API-TEAMS-TASKS.md](./API-TEAMS-TASKS.md))
 
+### Phase 5 Completed Features
+
+- ✅ ActivityLog Entity for immutable audit trail
+- ✅ Activity action enums (26+ action types)
+- ✅ Entity type enums for categorization
+- ✅ Comprehensive ActivityService with filtering & pagination
+- ✅ Activity controller with role-based access
+- ✅ @LogActivity decorator for automatic logging
+- ✅ Activity logging interceptor for auto-capture
+- ✅ Metadata builders for structured activity data
+- ✅ Activity analytics helpers (trends, anomaly detection)
+- ✅ Integration with Auth module (login, logout, register, password change)
+- ✅ Integration with Users module (profile updates)
+- ✅ Integration with Teams module (all team operations)
+- ✅ Integration with Tasks module (all task operations)
+- ✅ IP address and User-Agent tracking
+- ✅ Sensitive data sanitization
+- ✅ Activity statistics and reporting
+- ✅ Complete API documentation (see [ACTIVITY-LOGGING.md](./ACTIVITY-LOGGING.md))
+
+## 🔍 Activity Logging System
+
+TaskForge includes a comprehensive activity logging and audit system that tracks all important user actions for security, compliance, and analytics purposes.
+
+### Logged Activities
+
+The system automatically logs:
+
+- **Authentication**: Login, logout, registration, password changes
+- **Team Operations**: Create, update, delete teams, member management
+- **Task Operations**: Create, update, delete, assign, status changes
+- **User Operations**: Profile updates, role changes
+
+### Activity Endpoints
+
+All activity endpoints are protected and role-based:
+
+- `GET /api/v1/activity` - Get all activities (Admin only)
+- `GET /api/v1/activity/me` - Get your activities
+- `GET /api/v1/activity/entity/:entityType/:entityId` - Get entity activities
+- `GET /api/v1/activity/team/:teamId` - Get team activities
+- `GET /api/v1/activity/recent` - Get recent activities
+- `GET /api/v1/activity/stats` - Get activity statistics
+
+### Key Features
+
+- **Immutable Logs**: Activity logs cannot be modified or deleted (except admin cleanup)
+- **Automatic Logging**: Uses `@LogActivity` decorator for seamless integration
+- **Metadata**: Rich metadata including IP addresses, user agents, and action details
+- **Privacy**: Automatic sanitization of sensitive data (passwords, tokens)
+- **Analytics**: Built-in analytics for activity trends and anomaly detection
+- **Filtering**: Advanced filtering by user, action, entity, date range
+- **Pagination**: Efficient pagination for large datasets
+
+### Example Usage
+
+```typescript
+// Automatically logged when decorator is applied
+@LogActivity(ActivityAction.TEAM_CREATE, EntityType.TEAM)
+@Post()
+async createTeam(@Body() dto: CreateTeamDto) {
+  // Activity is automatically logged after successful execution
+}
+```
+
+For complete documentation, see [ACTIVITY-LOGGING.md](./ACTIVITY-LOGGING.md)
+
 ## 📚 Additional Resources
 
 - [NestJS Documentation](https://docs.nestjs.com/)
 - [TypeORM Documentation](https://typeorm.io/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
 - [Architecture Document](../ARCHITECTURE.md)
+- [Activity Logging Documentation](./ACTIVITY-LOGGING.md)
 
 ## 🤝 Contributing
 
