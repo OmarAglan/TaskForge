@@ -1,14 +1,15 @@
 import {
-    Column,
-    CreateDateColumn,
-    Entity,
-    Index,
-    JoinColumn,
-    ManyToOne,
-    OneToMany,
-    PrimaryGeneratedColumn,
-    UpdateDateColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { Task } from '../../tasks/entities/task.entity';
 import { User } from '../../users/entities/user.entity';
 import { TeamMember } from './team-member.entity';
 
@@ -44,8 +45,8 @@ export class Team {
   })
   members: TeamMember[];
 
-  @OneToMany(() => 'Task', (task: any) => task.team, {
+  @OneToMany(() => Task, (task) => task.team, {
     cascade: true,
   })
-  tasks: any[];
+  tasks: Task[];
 }
