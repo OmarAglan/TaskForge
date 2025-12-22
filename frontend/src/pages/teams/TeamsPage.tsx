@@ -16,7 +16,7 @@ import { ConfirmDialog } from '../../components/shared';
 import { useTeams } from '../../hooks/useTeams';
 import { useAuthStore } from '../../store/authStore';
 import { useDebounce } from '../../hooks/useDebounce';
-import { Team, TeamRole } from '../../types/team.types';
+import { Team, TeamRole, CreateTeamDto, UpdateTeamDto } from '../../types/team.types';
 import { toast } from '../../utils/toast';
 
 /**
@@ -103,11 +103,11 @@ export const TeamsPage: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (data: { name: string; description?: string }) => {
+  const handleSubmit = async (data: CreateTeamDto | UpdateTeamDto): Promise<Team> => {
     if (editingTeam) {
-      return await updateTeam(editingTeam.id, data);
+      return await updateTeam(editingTeam.id, data as UpdateTeamDto);
     } else {
-      return await createTeam(data);
+      return await createTeam(data as CreateTeamDto);
     }
   };
 
