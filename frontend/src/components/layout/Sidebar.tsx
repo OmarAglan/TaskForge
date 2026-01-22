@@ -15,6 +15,8 @@ import {
   Dashboard as DashboardIcon,
   Group as TeamIcon,
   Task as TaskIcon,
+  ViewKanban as BoardIcon,
+  Assignment as MyTasksIcon,
   Analytics as AnalyticsIcon,
   Settings as SettingsIcon,
 } from '@mui/icons-material';
@@ -30,12 +32,15 @@ interface NavItem {
   text: string;
   icon: React.ReactNode;
   path: string;
+  exact?: boolean;
 }
 
 const mainNavItems: NavItem[] = [
-  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/', exact: true },
+  { text: 'My Tasks', icon: <MyTasksIcon />, path: '/tasks/my', exact: true },
+  { text: 'All Tasks', icon: <TaskIcon />, path: '/tasks', exact: true },
+  { text: 'Task Board', icon: <BoardIcon />, path: '/tasks/board', exact: true },
   { text: 'Teams', icon: <TeamIcon />, path: '/teams' },
-  { text: 'Tasks', icon: <TaskIcon />, path: '/tasks' },
   { text: 'Analytics', icon: <AnalyticsIcon />, path: '/analytics' },
 ];
 
@@ -52,11 +57,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
     onClose();
   };
 
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
+  const isActive = (item: NavItem) => {
+    if (item.exact) {
+      return location.pathname === item.path;
     }
-    return location.pathname.startsWith(path);
+    return location.pathname.startsWith(item.path);
   };
 
   const drawerContent = (
@@ -74,7 +79,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
           <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               onClick={() => handleNavigate(item.path)}
-              selected={isActive(item.path)}
+              selected={isActive(item)}
               sx={{
                 borderRadius: 2,
                 '&.Mui-selected': {
@@ -92,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
               <ListItemIcon
                 sx={{
                   minWidth: 40,
-                  color: isActive(item.path) ? 'inherit' : 'text.secondary',
+                  color: isActive(item) ? 'inherit' : 'text.secondary',
                 }}
               >
                 {item.icon}
@@ -111,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
           <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
             <ListItemButton
               onClick={() => handleNavigate(item.path)}
-              selected={isActive(item.path)}
+              selected={isActive(item)}
               sx={{
                 borderRadius: 2,
                 '&.Mui-selected': {
@@ -129,7 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, onClose, drawerWidth }) 
               <ListItemIcon
                 sx={{
                   minWidth: 40,
-                  color: isActive(item.path) ? 'inherit' : 'text.secondary',
+                  color: isActive(item) ? 'inherit' : 'text.secondary',
                 }}
               >
                 {item.icon}

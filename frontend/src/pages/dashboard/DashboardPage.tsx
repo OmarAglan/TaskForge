@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -11,8 +11,9 @@ import {
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Chip,
   Divider,
+  Skeleton,
+  CircularProgress,
 } from '@mui/material';
 import {
   Task as TaskIcon,
@@ -24,6 +25,15 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
+import { useTasks } from '../../hooks/useTasks';
+import { useTeams } from '../../hooks/useTeams';
+import { TaskPriorityChip, TaskStatusChip, TaskDueDateBadge } from '../../components/tasks';
+import { TeamDialog } from '../../components/teams';
+import { TaskDialog } from '../../components/tasks';
+import { Task, TaskStatus, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
+import { Team, CreateTeamDto, TeamMember } from '../../types/team.types';
+import { toast } from '../../utils/toast';
+import * as teamsApi from '../../api/teams.api';
 
 interface StatCardProps {
   title: string;
@@ -31,9 +41,10 @@ interface StatCardProps {
   icon: React.ReactNode;
   color: string;
   trend?: string;
+  loading?: boolean;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend }) => (
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend, loading }) => (
   <Card sx={{ height: '100%' }}>
     <CardContent>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -41,10 +52,14 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, color, trend })
           <Typography variant="body2" color="text.secondary" gutterBottom>
             {title}
           </Typography>
-          <Typography variant="h4" fontWeight="bold">
-            {value}
-          </Typography>
-          {trend && (
+          {loading ? (
+            <Skeleton width={60} height={40} />
+          ) : (
+            <Typography variant="h4" fontWeight="bold">
+              {value}
+            </Typography>
+          )}
+          {trend && !loading && (
             <Typography variant="caption" color="success.main">
               {trend}
             </Typography>
@@ -91,19 +106,65 @@ const QuickAction: React.FC<QuickActionProps> = ({ title, description, icon, onC
   </Card>
 );
 
-// Mock data for recent activity (will be replaced with real data in Phase 9)
-const recentActivities = [
-  { id: 1, action: 'Created task', item: 'Design homepage mockup', time: '2 hours ago' },
-  { id: 2, action: 'Joined team', item: 'Marketing Team', time: '5 hours ago' },
-  { id: 3, action: 'Completed task', item: 'Update user documentation', time: '1 day ago' },
-  { id: 4, action: 'Assigned to', item: 'Review pull request #42', time: '2 days ago' },
-];
-
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  
+  const { tasks, isLoading: tasksLoading, loadMyTasks, createTask } = useTasks();
+  const { teams, isLoading: teamsLoading, loadTeams, createTeam } = useTeams();
+
+  const [teamDialogOpen, setTeamDialogOpen] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
   const firstName = user?.firstName || 'User';
+
+  // Load data on mount
+  useEffect(() => {
+    loadMyTasks({ limit: 10 });
+    loadTeams();
+  }, []);
+
+  // Calculate stats
+  const myTasksCount = tasks.length;
+  const teamsCount = teams.length;
+  const completedTasks = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+  const dueTodayTasks = tasks.filter(t => {
+    if (!t.dueDate) return false;
+    const today = new Date();
+    const dueDate = new Date(t.dueDate);
+    return dueDate.toDateString() === today.toDateString();
+  });
+
+  // Get recent tasks (not completed)
+  const recentTasks = tasks
+    .filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED)
+    .slice(0, 5);
+
+  // Handle team creation
+  const handleCreateTeam = async (data: CreateTeamDto): Promise<Team> => {
+    return await createTeam(data);
+  };
+
+  const handleTeamSuccess = () => {
+    setTeamDialogOpen(false);
+    toast.success('Team created successfully');
+    loadTeams();
+  };
+
+  // Handle task creation
+  const handleCreateTask = async (data: CreateTaskDto | UpdateTaskDto): Promise<Task> => {
+    return await createTask(data as CreateTaskDto);
+  };
+
+  const handleLoadTeamMembers = async (teamId: string): Promise<TeamMember[]> => {
+    return await teamsApi.getTeamMembers(teamId);
+  };
+
+  const handleTaskSuccess = () => {
+    setTaskDialogOpen(false);
+    toast.success('Task created successfully');
+    loadMyTasks({ limit: 10 });
+  };
 
   return (
     <Box>
@@ -122,35 +183,37 @@ export const DashboardPage: React.FC = () => {
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="My Tasks"
-            value={12}
+            value={myTasksCount}
             icon={<TaskIcon />}
             color="primary.main"
-            trend="+2 this week"
+            loading={tasksLoading}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Teams"
-            value={3}
+            value={teamsCount}
             icon={<TeamIcon />}
             color="secondary.main"
+            loading={teamsLoading}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Completed"
-            value={24}
+            value={completedTasks}
             icon={<TrendingUpIcon />}
             color="success.main"
-            trend="+8 this week"
+            loading={tasksLoading}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
           <StatCard
             title="Due Today"
-            value={3}
+            value={dueTodayTasks.length}
             icon={<ScheduleIcon />}
             color="warning.main"
+            loading={tasksLoading}
           />
         </Grid>
       </Grid>
@@ -165,7 +228,7 @@ export const DashboardPage: React.FC = () => {
             title="Create Task"
             description="Add a new task to your list"
             icon={<AddIcon />}
-            onClick={() => navigate('/tasks/new')}
+            onClick={() => setTaskDialogOpen(true)}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -173,7 +236,7 @@ export const DashboardPage: React.FC = () => {
             title="Create Team"
             description="Start a new team collaboration"
             icon={<TeamIcon />}
-            onClick={() => navigate('/teams/new')}
+            onClick={() => setTeamDialogOpen(true)}
           />
         </Grid>
         <Grid item xs={12} sm={6} md={4}>
@@ -181,49 +244,63 @@ export const DashboardPage: React.FC = () => {
             title="View All Tasks"
             description="See your complete task list"
             icon={<AssignmentIcon />}
-            onClick={() => navigate('/tasks')}
+            onClick={() => navigate('/tasks/my')}
           />
         </Grid>
       </Grid>
 
-      {/* Recent Activity */}
+      {/* Recent Tasks and Due Today */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6" fontWeight="bold">
-                  Recent Activity
+                  My Recent Tasks
                 </Typography>
-                <Button size="small" onClick={() => navigate('/analytics')}>
+                <Button size="small" onClick={() => navigate('/tasks/my')}>
                   View All
                 </Button>
               </Box>
-              <List disablePadding>
-                {recentActivities.map((activity, index) => (
-                  <React.Fragment key={activity.id}>
-                    <ListItem alignItems="flex-start" disablePadding sx={{ py: 1 }}>
-                      <ListItemAvatar>
-                        <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light' }}>
-                          <TaskIcon fontSize="small" />
-                        </Avatar>
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Typography variant="body2">
-                            {activity.action}{' '}
-                            <Typography component="span" fontWeight="medium">
-                              {activity.item}
+              {tasksLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : recentTasks.length === 0 ? (
+                <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                  No tasks yet. Create your first task!
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {recentTasks.map((task, index) => (
+                    <React.Fragment key={task.id}>
+                      <ListItem
+                        disablePadding
+                        sx={{ py: 1, cursor: 'pointer' }}
+                        onClick={() => navigate(`/tasks/${task.id}`)}
+                      >
+                        <ListItemAvatar>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light' }}>
+                            <TaskIcon fontSize="small" />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography variant="body2" noWrap sx={{ maxWidth: 200 }}>
+                              {task.title}
                             </Typography>
-                          </Typography>
-                        }
-                        secondary={activity.time}
-                      />
-                    </ListItem>
-                    {index < recentActivities.length - 1 && <Divider variant="inset" component="li" />}
-                  </React.Fragment>
-                ))}
-              </List>
+                          }
+                          secondary={task.team?.name || 'No team'}
+                        />
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <TaskStatusChip status={task.status} />
+                        </Box>
+                      </ListItem>
+                      {index < recentTasks.length - 1 && <Divider variant="inset" component="li" />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -235,55 +312,69 @@ export const DashboardPage: React.FC = () => {
                 <Typography variant="h6" fontWeight="bold">
                   Tasks Due Today
                 </Typography>
-                <Button size="small" onClick={() => navigate('/tasks?filter=today')}>
+                <Button size="small" onClick={() => navigate('/tasks/my')}>
                   View All
                 </Button>
               </Box>
-              <List disablePadding>
-                {/* Placeholder for tasks due today - will be populated from API */}
-                <ListItem disablePadding sx={{ py: 1 }}>
-                  <ListItemAvatar>
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'warning.light' }}>
-                      <TaskIcon fontSize="small" />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Complete project proposal"
-                    secondary="Due at 5:00 PM"
-                  />
-                  <Chip label="High" color="error" size="small" />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem disablePadding sx={{ py: 1 }}>
-                  <ListItemAvatar>
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'info.light' }}>
-                      <TaskIcon fontSize="small" />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Review team submissions"
-                    secondary="Due at 6:00 PM"
-                  />
-                  <Chip label="Medium" color="warning" size="small" />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem disablePadding sx={{ py: 1 }}>
-                  <ListItemAvatar>
-                    <Avatar sx={{ width: 32, height: 32, bgcolor: 'success.light' }}>
-                      <TaskIcon fontSize="small" />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary="Send weekly report"
-                    secondary="Due at 11:59 PM"
-                  />
-                  <Chip label="Low" color="default" size="small" />
-                </ListItem>
-              </List>
+              {tasksLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress size={24} />
+                </Box>
+              ) : dueTodayTasks.length === 0 ? (
+                <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+                  No tasks due today. Great job! 🎉
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {dueTodayTasks.map((task, index) => (
+                    <React.Fragment key={task.id}>
+                      <ListItem
+                        disablePadding
+                        sx={{ py: 1, cursor: 'pointer' }}
+                        onClick={() => navigate(`/tasks/${task.id}`)}
+                      >
+                        <ListItemAvatar>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: 'warning.light' }}>
+                            <TaskIcon fontSize="small" />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography variant="body2" noWrap sx={{ maxWidth: 180 }}>
+                              {task.title}
+                            </Typography>
+                          }
+                          secondary={task.dueDate && <TaskDueDateBadge dueDate={task.dueDate} />}
+                        />
+                        <TaskPriorityChip priority={task.priority} />
+                      </ListItem>
+                      {index < dueTodayTasks.length - 1 && <Divider variant="inset" component="li" />}
+                    </React.Fragment>
+                  ))}
+                </List>
+              )}
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+
+      {/* Create Team Dialog */}
+      <TeamDialog
+        open={teamDialogOpen}
+        onClose={() => setTeamDialogOpen(false)}
+        onSuccess={handleTeamSuccess}
+        onSubmit={handleCreateTeam}
+      />
+
+      {/* Create Task Dialog */}
+      <TaskDialog
+        open={taskDialogOpen}
+        teams={teams}
+        onClose={() => setTaskDialogOpen(false)}
+        onSuccess={handleTaskSuccess}
+        onSubmit={handleCreateTask}
+        onLoadTeamMembers={handleLoadTeamMembers}
+      />
     </Box>
   );
 };
