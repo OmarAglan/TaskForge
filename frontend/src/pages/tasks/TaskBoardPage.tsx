@@ -12,7 +12,6 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  useTheme,
 } from '@mui/material';
 import {
   Add as AddIcon,

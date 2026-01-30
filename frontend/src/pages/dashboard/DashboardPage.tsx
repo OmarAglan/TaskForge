@@ -31,7 +31,7 @@ import { TaskPriorityChip, TaskStatusChip, TaskDueDateBadge } from '../../compon
 import { TeamDialog } from '../../components/teams';
 import { TaskDialog } from '../../components/tasks';
 import { Task, TaskStatus, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
-import { Team, CreateTeamDto, TeamMember } from '../../types/team.types';
+import { Team, CreateTeamDto, UpdateTeamDto, TeamMember } from '../../types/team.types';
 import { toast } from '../../utils/toast';
 import * as teamsApi from '../../api/teams.api';
 
