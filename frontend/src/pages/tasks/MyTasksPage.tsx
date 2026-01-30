@@ -108,7 +108,7 @@ export const MyTasksPage: React.FC = () => {
     setEditingTask(undefined);
   };
 
-  const handleDialogSuccess = (task: Task) => {
+  const handleDialogSuccess = (_task: Task) => {
     handleDialogClose();
     loadMyTasks(filters);
     toast.success(editingTask ? 'Task updated successfully' : 'Task created successfully');
