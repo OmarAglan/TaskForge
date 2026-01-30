@@ -40,7 +40,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
   onClick,
   onEdit,
   onDelete,
-  onStatusChange,
   showTeam = false,
 }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

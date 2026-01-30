@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { ApiError, ApiResponse } from '@types/api.types';
+import { ApiError, ApiResponse } from '../types/api.types';
 
 // Storage keys
 const ACCESS_TOKEN_KEY = 'taskforge_access_token';

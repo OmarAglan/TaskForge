@@ -1,5 +1,5 @@
 import { Close as CloseIcon } from '@mui/icons-material';
-import { Alert, AlertTitle, Box, Button, IconButton, Snackbar } from '@mui/material';
+import { Alert, Box, Button, IconButton } from '@mui/material';
 import React, { useEffect } from 'react';
 import { ToastMessage, useToastStore } from '../../utils/toast';
 
