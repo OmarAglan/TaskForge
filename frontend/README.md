@@ -78,62 +78,74 @@ npm run lint
 
 ```
 frontend/
-├── public/              # Static assets
+├── public/                   # Static assets
 ├── src/
-│   ├── api/             # API client and modules
-│   │   ├── client.ts    # Axios instance with interceptors
-│   │   ├── auth.api.ts  # Authentication API
-│   │   ├── teams.api.ts # Teams API
-│   │   ├── tasks.api.ts # Tasks API
-│   │   └── activity.api.ts # Activity API
+│   ├── api/                  # API client and modules
+│   │   ├── client.ts         # Axios instance with interceptors
+│   │   ├── auth.api.ts       # Authentication API
+│   │   ├── teams.api.ts      # Teams API
+│   │   ├── tasks.api.ts      # Tasks API
+│   │   └── activity.api.ts   # Activity API
 │   │
-│   ├── components/      # Reusable components
-│   │   ├── common/      # Common components (Loading, ErrorBoundary)
-│   │   └── layout/      # Layout components (AppLayout, Navbar, Sidebar)
+│   ├── components/           # Reusable components
+│   │   ├── common/           # ErrorBoundary, Loading, Route guards
+│   │   ├── layout/           # AppLayout, Navbar, Sidebar
+│   │   ├── shared/           # ConfirmDialog, EmptyState, SearchBar, DateRangePicker, ToastProvider
+│   │   ├── skeletons/        # Skeleton loaders (TeamCardSkeleton, TaskCardSkeleton, TableSkeleton)
+│   │   ├── teams/            # Team UI components
+│   │   └── tasks/            # Task UI components
 │   │
-│   ├── contexts/        # React contexts
+│   ├── contexts/             # React contexts
 │   │   └── AuthContext.tsx
 │   │
-│   ├── hooks/           # Custom hooks
-│   │   ├── useAuth.ts   # Authentication hook
-│   │   └── useApi.ts    # API call hook
+│   ├── hooks/                # Custom hooks
+│   │   ├── useApi.ts
+│   │   ├── useAuth.ts
+│   │   ├── useDebounce.ts
+│   │   ├── useConfirm.ts
+│   │   ├── useTeams.ts
+│   │   └── useTasks.ts
 │   │
-│   ├── pages/           # Page components
-│   │   ├── auth/        # Login, Register pages
-│   │   ├── dashboard/   # Dashboard page
-│   │   └── NotFoundPage.tsx
+│   ├── pages/                # Route pages
+│   │   ├── auth/             # Login, Register
+│   │   ├── dashboard/        # Dashboard
+│   │   ├── teams/            # Teams pages
+│   │   ├── tasks/            # Tasks pages (list/board/detail/my)
+│   │   ├── NotFoundPage.tsx
+│   │   └── index.ts          # Pages barrel exports
 │   │
-│   ├── store/           # Zustand stores
-│   │   ├── authStore.ts # Authentication state
-│   │   ├── teamStore.ts # Teams state
-│   │   └── taskStore.ts # Tasks state
+│   ├── store/                # Zustand stores
+│   │   ├── authStore.ts
+│   │   ├── teamStore.ts
+│   │   └── taskStore.ts
 │   │
-│   ├── theme/           # Material-UI theme
+│   ├── theme/                # Material-UI theme
 │   │   └── index.ts
 │   │
-│   ├── types/           # TypeScript type definitions
+│   ├── types/                # TypeScript type definitions
 │   │   ├── user.types.ts
 │   │   ├── auth.types.ts
 │   │   ├── team.types.ts
 │   │   ├── task.types.ts
 │   │   └── api.types.ts
 │   │
-│   ├── utils/           # Utility functions
-│   │   ├── constants.ts # App constants
-│   │   ├── helpers.ts   # Helper functions
-│   │   └── validators.ts # Zod validation schemas
+│   ├── utils/                # Utility functions
+│   │   ├── constants.ts
+│   │   ├── helpers.ts
+│   │   ├── toast.ts          # Toast utilities + store
+│   │   └── validators.ts     # Zod validation schemas
 │   │
-│   ├── App.tsx          # Main app component
-│   ├── main.tsx         # Entry point
-│   └── index.css        # Global styles
+│   ├── App.tsx               # Main app component + routes
+│   ├── main.tsx              # Entry point
+│   └── index.css             # Global styles
 │
-├── .env.example         # Example environment variables
-├── .env.development     # Development environment
-├── index.html           # HTML template
-├── package.json         # Dependencies
-├── tsconfig.json        # TypeScript config
-├── tsconfig.node.json   # TypeScript config for Vite
-└── vite.config.ts       # Vite configuration
+├── .env.example              # Example environment variables
+├── .env.development          # Development environment
+├── index.html                # HTML template
+├── package.json              # Dependencies
+├── tsconfig.json             # TypeScript config
+├── tsconfig.node.json        # TypeScript config for Vite
+└── vite.config.ts            # Vite configuration
 ```
 
 ## Path Aliases
@@ -202,17 +214,17 @@ const { user, isAuthenticated, login, logout } = useAuthStore();
 ### Team Store
 
 ```tsx
-import { useTeamStore } from '@store/teamStore';
+import { useTeams } from '@hooks/useTeams';
 
-const { teams, fetchTeams, createTeam } = useTeamStore();
+const { teams, isLoading, loadTeams, createTeam, updateTeam, deleteTeam } = useTeams();
 ```
 
 ### Task Store
 
 ```tsx
-import { useTaskStore } from '@store/taskStore';
+import { useTasks } from '@hooks/useTasks';
 
-const { tasks, fetchTasks, createTask } = useTaskStore();
+const { tasks, isLoading, loadTasks, loadMyTasks, createTask, updateTask, deleteTask } = useTasks();
 ```
 
 ## API Integration
@@ -273,6 +285,42 @@ const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>
 });
 ```
 
+## Teams & Tasks UI (Phase 7)
+
+### Routes
+
+Key routes are defined in [`frontend/src/App.tsx`](frontend/src/App.tsx:1):
+
+- `/teams` → Teams list
+- `/teams/:id` → Team details (Overview / Members / Tasks / Activity)
+- `/tasks` → All tasks (filters + list view)
+- `/tasks/board` → Kanban board view
+- `/tasks/my` → My tasks (assigned to current user)
+- `/tasks/:id` → Task detail
+
+Navigation is provided via [`frontend/src/components/layout/Sidebar.tsx`](frontend/src/components/layout/Sidebar.tsx:1).
+
+### Teams features
+
+- Teams list with search + create flow (dialog form)
+- Team detail page with:
+  - Overview stats via [`TeamStats`](frontend/src/components/teams/TeamStats.tsx:1)
+  - Members management via [`TeamMembersList`](frontend/src/components/teams/TeamMembersList.tsx:1) and [`AddMemberDialog`](frontend/src/components/teams/AddMemberDialog.tsx:1)
+  - Tasks tab integration (team-scoped task views)
+- Destructive actions use confirmation dialogs via [`ConfirmDialog`](frontend/src/components/shared/ConfirmDialog.tsx:1)
+
+### Tasks features
+
+- Tasks list with filters via [`TaskFilters`](frontend/src/components/tasks/TaskFilters.tsx:1)
+- Task creation/editing via [`TaskDialog`](frontend/src/components/tasks/TaskDialog.tsx:1) + [`TaskForm`](frontend/src/components/tasks/TaskForm.tsx:1)
+- Task detail view with status/priority updates
+- Board view via [`TaskBoardPage`](frontend/src/pages/tasks/TaskBoardPage.tsx:1) (drag/drop can be enhanced in Phase 8)
+
+### User feedback & loading UX
+
+- Toast notifications via [`toast`](frontend/src/utils/toast.ts:1) rendered by [`ToastProvider`](frontend/src/components/shared/ToastProvider.tsx:1)
+- Skeleton loaders via [`frontend/src/components/skeletons/index.ts`](frontend/src/components/skeletons/index.ts:1)
+
 ## Development Guidelines
 
 ### Code Style
@@ -310,9 +358,16 @@ const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>
   - [x] Zustand stores
   - [x] Authentication (Login/Register)
   - [x] Layout components
-  - [x] Dashboard placeholder
 
-- [ ] Phase 7: Teams and Tasks UI (Coming next)
+- [x] Phase 7: Teams and Tasks UI
+  - [x] Teams list + create/edit/delete flows
+  - [x] Team detail (tabs) + member management
+  - [x] Tasks list + filters + pagination controls (UI)
+  - [x] My Tasks view
+  - [x] Task board view
+  - [x] Task detail view + quick status/priority updates
+  - [x] Shared UX: confirm dialogs, empty states, search, toast notifications, skeleton loaders
+
 - [ ] Phase 8: Real-time Features
 - [ ] Phase 9: Analytics Dashboard
 
