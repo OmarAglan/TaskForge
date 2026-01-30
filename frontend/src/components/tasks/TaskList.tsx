@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, List, ListItem, Typography } from '@mui/material';
+import { Box, Grid, List, ListItem } from '@mui/material';
 import { Task } from '../../types/task.types';
 import { TaskCard } from './TaskCard';
 import { TaskCardSkeleton } from '../skeletons/TaskCardSkeleton';

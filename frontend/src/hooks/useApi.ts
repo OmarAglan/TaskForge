@@ -56,7 +56,7 @@ export function useApi<T, TArgs extends unknown[] = []>(
  */
 export function useApiOnMount<T>(
   apiFunction: () => Promise<T>,
-  dependencies: unknown[] = []
+  _dependencies: unknown[] = []
 ): UseApiState<T> & { refetch: () => Promise<T> } {
   const { data, isLoading, error, execute } = useApi(apiFunction);
 

@@ -16,6 +16,7 @@ const Toast: React.FC<{
             const timer = setTimeout(onClose, toast.duration);
             return () => clearTimeout(timer);
         }
+        return undefined;
     }, [toast.duration, onClose]);
     return (
         <Alert

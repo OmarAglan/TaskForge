@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { Task, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
+import { Task, CreateTaskDto, UpdateTaskDto, TaskPriority, TaskStatus } from '../../types/task.types';
 import { Team, TeamMember } from '../../types/team.types';
 import { TaskForm } from './TaskForm';
 import { TaskFormData } from '../../utils/validators';
@@ -83,7 +83,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         status: data.status,
         dueDate: data.dueDate || undefined,
       };
-      
+
       const result = await onSubmit(submitData);
       onSuccess(result);
       onClose();

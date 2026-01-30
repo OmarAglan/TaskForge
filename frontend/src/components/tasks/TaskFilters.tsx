@@ -17,7 +17,6 @@ import {
 import {
   Search as SearchIcon,
   Clear as ClearIcon,
-  FilterList as FilterIcon,
 } from '@mui/icons-material';
 import { TaskStatus, TaskPriority, FilterTasksDto, getStatusLabel, getPriorityLabel } from '../../types/task.types';
 import { Team } from '../../types/team.types';

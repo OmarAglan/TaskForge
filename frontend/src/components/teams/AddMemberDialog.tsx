@@ -40,7 +40,7 @@ export interface AddMemberDialogProps {
  */
 export const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
   open,
-  teamId,
+  teamId: _teamId,
   availableUsers,
   isLoadingUsers = false,
   onClose,
