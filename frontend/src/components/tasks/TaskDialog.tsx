@@ -8,7 +8,7 @@ import {
   Box,
 } from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
-import { Task, CreateTaskDto, UpdateTaskDto, TaskPriority, TaskStatus } from '../../types/task.types';
+import { Task, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
 import { Team, TeamMember } from '../../types/team.types';
 import { TaskForm } from './TaskForm';
 import { TaskFormData } from '../../utils/validators';
@@ -74,7 +74,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
     setError(null);
 
     try {
-      const submitData: CreateTaskDto | UpdateTaskDto = {
+      const submitData = {
         title: data.title,
         description: data.description || undefined,
         teamId: data.teamId,
@@ -82,7 +82,7 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
         priority: data.priority,
         status: data.status,
         dueDate: data.dueDate || undefined,
-      };
+      } as CreateTaskDto | UpdateTaskDto;
 
       const result = await onSubmit(submitData);
       onSuccess(result);

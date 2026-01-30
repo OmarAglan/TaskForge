@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 import { TaskStatus, TaskPriority, FilterTasksDto, getStatusLabel, getPriorityLabel } from '../../types/task.types';
 import { Team } from '../../types/team.types';
-import { DateRangePicker } from '../shared/DateRangePicker';
+// DateRangePicker removed - not currently used
 
 export interface TaskFiltersProps {
   filters: FilterTasksDto;
@@ -65,7 +65,7 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
   onChange,
   teams = [],
   showTeamFilter = true,
-  showAssigneeFilter = false,
+  showAssigneeFilter: _showAssigneeFilter = false,
   compact = false,
 }) => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -88,10 +88,7 @@ export const TaskFilters: React.FC<TaskFiltersProps> = ({
     onChange({ ...filters, teamId: event.target.value || undefined });
   };
 
-  const handleDateRangeChange = (range: { startDate: string | null; endDate: string | null }) => {
-    // Date range would need to be added to FilterTasksDto
-    onChange({ ...filters });
-  };
+  // handleDateRangeChange removed - not currently used
 
   const handleClearFilters = () => {
     onChange({

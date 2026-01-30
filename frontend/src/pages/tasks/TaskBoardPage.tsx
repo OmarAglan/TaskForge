@@ -237,11 +237,9 @@ const BoardCard: React.FC<BoardCardProps> = ({
  */
 export const TaskBoardPage: React.FC = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
 
   const {
     tasks,
-    isLoading,
     loadTasks,
     createTask,
     updateTask,

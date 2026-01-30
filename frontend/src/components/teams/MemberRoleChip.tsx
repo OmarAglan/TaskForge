@@ -20,21 +20,6 @@ export const getRoleLabel = (role: TeamRole): string => {
 };
 /**
 
-Get role chip color based on role type
-*/
-const _getRoleColor = (role: TeamRole): ChipProps['color'] => {
-    switch (role) {
-        case TeamRole.OWNER:
-            return 'warning';
-        case TeamRole.ADMIN:
-            return 'primary';
-        case TeamRole.MEMBER:
-        default:
-            return 'default';
-    }
-};
-/**
-
 Get role chip styles for custom colors
 */
 const getRoleStyles = (role: TeamRole) => {

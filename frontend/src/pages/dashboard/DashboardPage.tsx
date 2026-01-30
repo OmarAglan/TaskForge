@@ -109,7 +109,7 @@ const QuickAction: React.FC<QuickActionProps> = ({ title, description, icon, onC
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  
+
   const { tasks, isLoading: tasksLoading, loadMyTasks, createTask } = useTasks();
   const { teams, isLoading: teamsLoading, loadTeams, createTeam } = useTeams();
 
@@ -141,8 +141,8 @@ export const DashboardPage: React.FC = () => {
     .slice(0, 5);
 
   // Handle team creation
-  const handleCreateTeam = async (data: CreateTeamDto): Promise<Team> => {
-    return await createTeam(data);
+  const handleCreateTeam = async (data: CreateTeamDto | UpdateTeamDto): Promise<Team> => {
+    return await createTeam(data as CreateTeamDto);
   };
 
   const handleTeamSuccess = () => {

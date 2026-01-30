@@ -11,7 +11,6 @@ import {
   Select,
   MenuItem,
   Drawer,
-  IconButton,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
@@ -65,7 +64,7 @@ export const TasksPage: React.FC = () => {
   // Load tasks and teams on mount
   useEffect(() => {
     loadTeams();
-    
+
     // Parse URL params for initial filters
     const urlFilters: FilterTasksDto = {
       page: parseInt(searchParams.get('page') || '1'),
@@ -131,7 +130,7 @@ export const TasksPage: React.FC = () => {
     setEditingTask(undefined);
   };
 
-  const handleDialogSuccess = (task: Task) => {
+  const handleDialogSuccess = (_task: Task) => {
     handleDialogClose();
     loadTasks(filters);
     toast.success(editingTask ? 'Task updated successfully' : 'Task created successfully');

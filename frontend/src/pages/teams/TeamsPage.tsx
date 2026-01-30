@@ -79,7 +79,7 @@ export const TeamsPage: React.FC = () => {
     setDeleteConfirmOpen(true);
   }, []);
 
-  const handleLeave = useCallback(async (team: Team) => {
+  const handleLeave = useCallback(async (_team: Team) => {
     // Leave team functionality would be implemented here
     toast.info('Leave team functionality coming soon');
   }, []);
@@ -94,7 +94,7 @@ export const TeamsPage: React.FC = () => {
     setEditingTeam(undefined);
   };
 
-  const handleDialogSuccess = (team: Team) => {
+  const handleDialogSuccess = (_team: Team) => {
     handleDialogClose();
     if (editingTeam) {
       toast.success('Team updated successfully');

@@ -178,7 +178,7 @@ export const TeamDetailPage: React.FC = () => {
     }
   };
 
-  const handleSearchUsers = useCallback((query: string) => {
+  const handleSearchUsers = useCallback((_query: string) => {
     // Would fetch users from API based on query
     // For now, just set empty array
     setAvailableUsers([]);

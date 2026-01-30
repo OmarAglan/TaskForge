@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -9,12 +9,7 @@ import {
   Link,
   IconButton,
   Divider,
-  Chip,
   CircularProgress,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
@@ -34,7 +29,7 @@ import {
 import { ConfirmDialog, EmptyState } from '../../components/shared';
 import { useTasks } from '../../hooks/useTasks';
 import { useTeams } from '../../hooks/useTeams';
-import { Task, TaskStatus, TaskPriority, UpdateTaskDto, getStatusLabel, getPriorityLabel } from '../../types/task.types';
+import { Task, TaskStatus, UpdateTaskDto } from '../../types/task.types';
 import { TeamMember } from '../../types/team.types';
 import { getFullName } from '../../types/user.types';
 import { toast } from '../../utils/toast';
