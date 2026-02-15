@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Between, LessThan, Repository } from 'typeorm';
+import { WebSocketService } from '../websocket/websocket.service';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 import { FilterActivityLogsDto } from './dto/filter-activity-logs.dto';
 import { ActivityLog } from './entities/activity-log.entity';
@@ -16,6 +17,7 @@ export class ActivityService {
     constructor(
         @InjectRepository(ActivityLog)
         private readonly activityLogRepository: Repository<ActivityLog>,
+        private readonly websocketService: WebSocketService,
     ) { }
 
     /**
@@ -33,7 +35,32 @@ export class ActivityService {
                 metadata: sanitizedMetadata,
             });
 
-            return await this.activityLogRepository.save(activityLog);
+            const saved = await this.activityLogRepository.save(activityLog);
+
+            // Best-effort real-time activity emission (team-scoped)
+            try {
+                const teamId = this.extractTeamIdForRealtime(
+                    createActivityLogDto,
+                    sanitizedMetadata,
+                );
+
+                if (teamId) {
+                    this.websocketService.emitActivity(teamId, {
+                        id: saved.id,
+                        userId: saved.userId,
+                        action: saved.action,
+                        entityType: saved.entityType,
+                        entityId: saved.entityId,
+                        metadata: saved.metadata,
+                        createdAt: saved.createdAt.toISOString(),
+                    });
+                }
+            } catch (err) {
+                // Don't break main flow
+                console.warn('Failed to emit activity websocket event:', err);
+            }
+
+            return saved;
         } catch (error) {
             // Log error but don't throw - logging should not break application flow
             console.error('Failed to log activity:', error);
@@ -322,6 +349,33 @@ export class ActivityService {
      */
     extractUserAgent(request: any): string | null {
         return request.headers['user-agent'] || null;
+    }
+
+    /**
+     * Try to infer the teamId related to this activity log so we can emit it
+     * to the correct Socket.io room (`team:${teamId}`).
+     *
+     * Note: Not all activities include enough context to derive teamId.
+     */
+    private extractTeamIdForRealtime(
+        dto: CreateActivityLogDto,
+        sanitizedMetadata: Record<string, any> | null,
+    ): string | null {
+        // Team and team-member activities: entityId is the teamId in our interceptor extraction
+        if (dto.entityType === EntityType.TEAM || dto.entityType === EntityType.TEAM_MEMBER) {
+            return dto.entityId ?? null;
+        }
+
+        const m: any = sanitizedMetadata ?? dto.metadata ?? null;
+
+        // Task activities: prefer explicit teamId, fallback to common metadata shapes
+        return (
+            m?.teamId ??
+            m?.requestBody?.teamId ??
+            m?.params?.teamId ??
+            m?.params?.id ??
+            null
+        );
     }
 
     /**

@@ -1,15 +1,16 @@
-import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
-import { theme } from './theme';
-import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from '@mui/material/styles';
+import React, { Suspense, lazy, useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { Loading } from './components/common/Loading';
 import { PrivateRoute, PublicRoute } from './components/common/PrivateRoute';
 import { AppLayout } from './components/layout/AppLayout';
 import { ToastProvider } from './components/shared/ToastProvider';
+import { AuthProvider } from './contexts/AuthContext';
+import { useWebSocket } from './hooks/useWebSocket';
 import { useAuthStore } from './store/authStore';
+import { theme } from './theme';
 
 // Lazy load pages for code splitting
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
@@ -83,6 +84,10 @@ const AuthInitializer: React.FC<{ children: React.ReactNode }> = ({ children }) 
  * Main App component
  */
 const App: React.FC = () => {
+  // Initialize WebSocket connection when user is authenticated
+  // The hook will handle connect/disconnect based on auth state
+  useWebSocket();
+
   return (
     <ErrorBoundary>
       <ThemeProvider theme={theme}>

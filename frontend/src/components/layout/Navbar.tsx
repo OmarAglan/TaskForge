@@ -22,6 +22,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { getInitials } from '../../types/user.types';
+import { NotificationBell } from '../notifications/NotificationBell';
 
 interface NavbarProps {
   onMenuClick: () => void;
@@ -86,12 +87,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onMenuClick, drawerWidth }) => {
           TaskForge
         </Typography>
 
-        {/* Notifications - Placeholder for Phase 8 */}
-        <Tooltip title="Notifications">
-          <IconButton color="inherit" sx={{ mr: 1 }}>
-            <NotificationsIcon />
-          </IconButton>
-        </Tooltip>
+        {/* Notifications Bell with real-time updates */}
+        <NotificationBell />
 
         {/* User Menu */}
         <Tooltip title="Account">

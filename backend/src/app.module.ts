@@ -11,6 +11,8 @@ import { UsersModule } from './modules/users/users.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { ActivityModule } from './modules/activity/activity.module';
+import { WebSocketModule } from './modules/websocket/websocket.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
@@ -69,9 +71,10 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
     TeamsModule,
     TasksModule,
     ActivityModule,
+    NotificationsModule,
+    WebSocketModule,
     // Future modules:
     // AnalyticsModule,
-    // NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

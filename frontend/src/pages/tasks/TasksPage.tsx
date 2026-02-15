@@ -25,6 +25,7 @@ import { TaskList, TaskFilters, TaskDialog } from '../../components/tasks';
 import { ConfirmDialog } from '../../components/shared';
 import { useTasks } from '../../hooks/useTasks';
 import { useTeams } from '../../hooks/useTeams';
+import { useRealtimeTasks } from '../../hooks/useRealtimeTasks';
 import { Task, FilterTasksDto, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
 import { TeamMember } from '../../types/team.types';
 import { toast } from '../../utils/toast';
@@ -52,6 +53,9 @@ export const TasksPage: React.FC = () => {
   } = useTasks();
 
   const { teams, loadTeams } = useTeams();
+
+  // Initialize real-time task updates
+  useRealtimeTasks();
 
   const [view, setView] = useState<'grid' | 'list'>('grid');
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -11,6 +11,9 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { FilterTasksDto } from './dto/filter-tasks.dto';
 import { TeamMember, TeamRole } from '../teams/entities/team-member.entity';
+import { WebSocketService } from '../websocket/websocket.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/notification.entity';
 
 export interface PaginatedResult<T> {
   items: T[];
@@ -42,6 +45,8 @@ export class TasksService {
     private readonly taskRepository: Repository<Task>,
     @InjectRepository(TeamMember)
     private readonly teamMemberRepository: Repository<TeamMember>,
+    private readonly websocketService: WebSocketService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -83,7 +88,25 @@ export class TasksService {
       status: createTaskDto.status || TaskStatus.TODO,
     });
 
-    return this.taskRepository.save(task);
+    const saved = await this.taskRepository.save(task);
+
+    // Real-time updates (best-effort)
+    this.websocketService.emitTaskCreated(saved, userId);
+
+    // If created with assignee, emit assignment + create notification
+    if (saved.assignedToId) {
+      this.websocketService.emitTaskAssigned(saved, saved.assignedToId, userId);
+
+      await this.notificationsService.create(
+        saved.assignedToId,
+        NotificationType.TASK_ASSIGNED,
+        'Task assigned',
+        `You were assigned to task "${saved.title}"`,
+        { taskId: saved.id, teamId: saved.teamId },
+      );
+    }
+
+    return saved;
   }
 
   /**
@@ -240,9 +263,88 @@ export class TasksService {
       }
     }
 
-    // Update task
-    Object.assign(task, updateTaskDto);
-    return this.taskRepository.save(task);
+    const changes: Record<string, any> = {};
+    const oldStatus = task.status;
+    const oldAssigneeId = task.assignedToId;
+
+    if (updateTaskDto.title !== undefined && updateTaskDto.title !== task.title) {
+      changes.title = { old: task.title, new: updateTaskDto.title };
+      task.title = updateTaskDto.title;
+    }
+
+    if (
+      updateTaskDto.description !== undefined &&
+      updateTaskDto.description !== task.description
+    ) {
+      changes.description = { old: task.description, new: updateTaskDto.description };
+      task.description = updateTaskDto.description ?? null;
+    }
+
+    if (updateTaskDto.status !== undefined && updateTaskDto.status !== task.status) {
+      changes.status = { old: task.status, new: updateTaskDto.status };
+      task.status = updateTaskDto.status;
+    }
+
+    if (
+      updateTaskDto.priority !== undefined &&
+      updateTaskDto.priority !== task.priority
+    ) {
+      changes.priority = { old: task.priority, new: updateTaskDto.priority };
+      task.priority = updateTaskDto.priority;
+    }
+
+    if (
+      updateTaskDto.assignedToId !== undefined &&
+      updateTaskDto.assignedToId !== task.assignedToId
+    ) {
+      changes.assignedToId = { old: task.assignedToId, new: updateTaskDto.assignedToId };
+      task.assignedToId = updateTaskDto.assignedToId;
+    }
+
+    if (updateTaskDto.dueDate !== undefined) {
+      const oldDueDateIso = task.dueDate ? task.dueDate.toISOString() : null;
+      const newDueDate = updateTaskDto.dueDate ? new Date(updateTaskDto.dueDate) : null;
+
+      const newDueDateIso = newDueDate ? newDueDate.toISOString() : null;
+      if (oldDueDateIso !== newDueDateIso) {
+        changes.dueDate = { old: oldDueDateIso, new: newDueDateIso };
+      }
+
+      task.dueDate = newDueDate;
+    }
+
+    const updatedTask = await this.taskRepository.save(task);
+
+    // Emit generic update (even if changes is empty)
+    this.websocketService.emitTaskUpdated(updatedTask, userId, changes);
+
+    // Emit specialized events
+    if (oldStatus !== updatedTask.status) {
+      this.websocketService.emitTaskStatusChanged(
+        updatedTask,
+        oldStatus,
+        updatedTask.status,
+        userId,
+      );
+    }
+
+    if (oldAssigneeId !== updatedTask.assignedToId && updatedTask.assignedToId) {
+      this.websocketService.emitTaskAssigned(
+        updatedTask,
+        updatedTask.assignedToId,
+        userId,
+      );
+
+      await this.notificationsService.create(
+        updatedTask.assignedToId,
+        NotificationType.TASK_ASSIGNED,
+        'Task assigned',
+        `You were assigned to task "${updatedTask.title}"`,
+        { taskId: updatedTask.id, teamId: updatedTask.teamId },
+      );
+    }
+
+    return updatedTask;
   }
 
   /**
@@ -264,6 +366,9 @@ export class TasksService {
     }
 
     await this.taskRepository.remove(task);
+
+    // Emit after deletion (room still exists on server)
+    this.websocketService.emitTaskDeleted(id, task.teamId, userId);
   }
 
   /**
@@ -308,8 +413,25 @@ export class TasksService {
       );
     }
 
+    const oldAssigneeId = task.assignedToId;
+
     task.assignedToId = assignedToId;
-    return this.taskRepository.save(task);
+    const updatedTask = await this.taskRepository.save(task);
+
+    this.websocketService.emitTaskAssigned(updatedTask, assignedToId, userId);
+    this.websocketService.emitTaskUpdated(updatedTask, userId, {
+      assignedToId: { old: oldAssigneeId, new: assignedToId },
+    });
+
+    await this.notificationsService.create(
+      assignedToId,
+      NotificationType.TASK_ASSIGNED,
+      'Task assigned',
+      `You were assigned to task "${updatedTask.title}"`,
+      { taskId: updatedTask.id, teamId: updatedTask.teamId },
+    );
+
+    return updatedTask;
   }
 
   /**
@@ -344,8 +466,17 @@ export class TasksService {
       );
     }
 
+    const oldStatus = task.status;
+
     task.status = status;
-    return this.taskRepository.save(task);
+    const updatedTask = await this.taskRepository.save(task);
+
+    this.websocketService.emitTaskStatusChanged(updatedTask, oldStatus, status, userId);
+    this.websocketService.emitTaskUpdated(updatedTask, userId, {
+      status: { old: oldStatus, new: status },
+    });
+
+    return updatedTask;
   }
 
   /**

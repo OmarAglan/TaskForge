@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { Team, TeamMember, CreateTeamDto, UpdateTeamDto, AddMemberDto, TeamRole } from '../types/team.types';
 import * as teamsApi from '../api/teams.api';
+import type { AddMemberDto, CreateTeamDto, Team, TeamMember, TeamRole, UpdateTeamDto } from '../types/team.types';
 
 interface TeamState {
   // State
@@ -23,6 +23,14 @@ interface TeamState {
   updateMemberRole: (teamId: string, memberId: string, role: TeamRole) => Promise<TeamMember>;
   clearCurrentTeam: () => void;
   clearError: () => void;
+
+  // WebSocket handlers (update local state without API calls)
+  addTeam: (team: Team) => void;
+  updateTeamFromWS: (team: Team) => void;
+  removeTeam: (teamId: string) => void;
+  addMemberFromWS: (teamId: string, member: TeamMember) => void;
+  removeMemberFromWS: (teamId: string, memberId: string) => void;
+  updateMemberFromWS: (teamId: string, member: TeamMember) => void;
 }
 
 export const useTeamStore = create<TeamState>()((set, get) => ({
@@ -199,6 +207,60 @@ export const useTeamStore = create<TeamState>()((set, get) => ({
   // Clear error
   clearError: () => {
     set({ error: null });
+  },
+
+  // WebSocket handlers (update local state without API calls)
+  addTeam: (team: Team) => {
+    set((state) => ({
+      teams: [...state.teams, team],
+    }));
+  },
+
+  updateTeamFromWS: (team: Team) => {
+    set((state) => ({
+      teams: state.teams.map((t) => (t.id === team.id ? team : t)),
+      currentTeam: state.currentTeam?.id === team.id ? team : state.currentTeam,
+    }));
+  },
+
+  removeTeam: (teamId: string) => {
+    set((state) => ({
+      teams: state.teams.filter((t) => t.id !== teamId),
+      currentTeam: state.currentTeam?.id === teamId ? null : state.currentTeam,
+    }));
+  },
+
+  addMemberFromWS: (teamId: string, member: TeamMember) => {
+    set((state) => {
+      // Only add if we're viewing this team
+      if (state.currentTeam?.id === teamId) {
+        const exists = state.members.some((m) => m.id === member.id);
+        if (!exists) {
+          return { members: [...state.members, member] };
+        }
+      }
+      return {};
+    });
+  },
+
+  removeMemberFromWS: (teamId: string, memberId: string) => {
+    set((state) => {
+      // Only remove if we're viewing this team
+      if (state.currentTeam?.id === teamId) {
+        return { members: state.members.filter((m) => m.id !== memberId) };
+      }
+      return {};
+    });
+  },
+
+  updateMemberFromWS: (teamId: string, member: TeamMember) => {
+    set((state) => {
+      // Only update if we're viewing this team
+      if (state.currentTeam?.id === teamId) {
+        return { members: state.members.map((m) => (m.id === member.id ? member : m)) };
+      }
+      return {};
+    });
   },
 }));
 

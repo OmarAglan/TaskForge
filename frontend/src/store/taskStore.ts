@@ -1,7 +1,7 @@
 import { create } from 'zustand';
-import type { Task, CreateTaskDto, UpdateTaskDto, FilterTasksDto, TaskStatus } from '../types/task.types';
-import type { PaginationMeta } from '../types/api.types';
 import * as tasksApi from '../api/tasks.api';
+import type { PaginationMeta } from '../types/api.types';
+import type { CreateTaskDto, FilterTasksDto, Task, TaskStatus, UpdateTaskDto } from '../types/task.types';
 
 interface TaskState {
   // State
@@ -27,6 +27,11 @@ interface TaskState {
   clearFilters: () => void;
   clearCurrentTask: () => void;
   clearError: () => void;
+
+  // WebSocket handlers (update local state without API calls)
+  addTask: (task: Task) => void;
+  updateTaskFromWS: (task: Task) => void;
+  removeTask: (taskId: string) => void;
 }
 
 const defaultFilters: FilterTasksDto = {
@@ -238,6 +243,27 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
   // Clear error
   clearError: () => {
     set({ error: null });
+  },
+
+  // WebSocket handlers (update local state without API calls)
+  addTask: (task: Task) => {
+    set((state) => ({
+      tasks: [task, ...state.tasks],
+    }));
+  },
+
+  updateTaskFromWS: (task: Task) => {
+    set((state) => ({
+      tasks: state.tasks.map((t) => (t.id === task.id ? task : t)),
+      currentTask: state.currentTask?.id === task.id ? task : state.currentTask,
+    }));
+  },
+
+  removeTask: (taskId: string) => {
+    set((state) => ({
+      tasks: state.tasks.filter((t) => t.id !== taskId),
+      currentTask: state.currentTask?.id === taskId ? null : state.currentTask,
+    }));
   },
 }));
 

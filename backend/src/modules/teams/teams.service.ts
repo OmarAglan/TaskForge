@@ -14,6 +14,9 @@ import { UpdateTeamDto } from './dto/update-team.dto';
 import { AddMemberDto } from './dto/add-member.dto';
 import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { TeamPermissionsHelper } from './helpers/team-permissions.helper';
+import { WebSocketService } from '../websocket/websocket.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationType } from '../notifications/notification.entity';
 
 @Injectable()
 export class TeamsService {
@@ -22,6 +25,8 @@ export class TeamsService {
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(TeamMember)
     private readonly teamMemberRepository: Repository<TeamMember>,
+    private readonly websocketService: WebSocketService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -44,6 +49,10 @@ export class TeamsService {
     });
 
     await this.teamMemberRepository.save(ownerMember);
+
+    // Real-time: creator should join the new team room without needing reconnect
+    this.websocketService.addUserToTeamRoom(userId, savedTeam.id);
+    this.websocketService.emitTeamCreated(savedTeam, userId);
 
     return savedTeam;
   }
@@ -111,7 +120,11 @@ export class TeamsService {
 
     // Update team
     Object.assign(team, updateTeamDto);
-    return this.teamRepository.save(team);
+    const updatedTeam = await this.teamRepository.save(team);
+
+    this.websocketService.emitTeamUpdated(updatedTeam, userId);
+
+    return updatedTeam;
   }
 
   /**
@@ -136,6 +149,9 @@ export class TeamsService {
         'Only the team owner can delete the team',
       );
     }
+
+    // Real-time: notify connected team members before deletion
+    this.websocketService.emitTeamDeleted(team.id, userId);
 
     // Delete team (cascade will delete members and tasks)
     await this.teamRepository.remove(team);
@@ -194,7 +210,24 @@ export class TeamsService {
       role: addMemberDto.role,
     });
 
-    return this.teamMemberRepository.save(member);
+    const savedMember = await this.teamMemberRepository.save(member);
+
+    // Real-time: add new member sockets to team room
+    this.websocketService.addUserToTeamRoom(addMemberDto.userId, teamId);
+
+    // Real-time: broadcast to team
+    this.websocketService.emitTeamMemberAdded(team, savedMember, userId);
+
+    // Notification: notify the added member
+    await this.notificationsService.create(
+      addMemberDto.userId,
+      NotificationType.TEAM_MEMBER_ADDED,
+      'Added to team',
+      `You were added to team "${team.name}"`,
+      { teamId: team.id, teamName: team.name },
+    );
+
+    return savedMember;
   }
 
   /**
@@ -251,6 +284,12 @@ export class TeamsService {
 
     // Remove member
     await this.teamMemberRepository.remove(targetMember);
+
+    // Real-time: notify team members (emit first so removed user still receives it if connected)
+    this.websocketService.emitTeamMemberRemoved(team, targetMember.userId, userId);
+
+    // Real-time: remove user sockets from team room
+    this.websocketService.removeUserFromTeamRoom(targetMember.userId, teamId);
   }
 
   /**
@@ -304,7 +343,11 @@ export class TeamsService {
 
     // Update role
     targetMember.role = updateRoleDto.role;
-    return this.teamMemberRepository.save(targetMember);
+    const updatedMember = await this.teamMemberRepository.save(targetMember);
+
+    this.websocketService.emitTeamMemberRoleChanged(team, updatedMember, userId);
+
+    return updatedMember;
   }
 
   /**

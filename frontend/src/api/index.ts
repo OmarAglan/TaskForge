@@ -1,17 +1,20 @@
-// API Client
+/* API Client */
 export * from './client';
 
-// Auth API
+/* Auth API */
 export * as authApi from './auth.api';
 
-// Users API
+/* Users API */
 export * as usersApi from './users.api';
 
-// Teams API
+/* Teams API */
 export * as teamsApi from './teams.api';
 
-// Tasks API
+/* Tasks API */
 export * as tasksApi from './tasks.api';
 
-// Activity API
+/* Activity API */
 export * as activityApi from './activity.api';
+
+/* Notifications API */
+export * as notificationsApi from './notifications.api';

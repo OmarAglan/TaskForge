@@ -16,6 +16,8 @@ export * from './shared';
 // Feature components
 export * from './teams';
 export * from './tasks';
+export * from './notifications';
+export * from './presence';
 
 // Loading skeletons
 export * from './skeletons';

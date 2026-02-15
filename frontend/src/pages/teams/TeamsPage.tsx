@@ -1,22 +1,22 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
 import {
   Box,
-  Typography,
   Button,
   Grid,
-  TextField,
   InputAdornment,
+  TextField,
+  Typography,
 } from '@mui/material';
-import { Add as AddIcon, Search as SearchIcon } from '@mui/icons-material';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TeamCard, TeamDialog } from '../../components/teams';
+import { ConfirmDialog, EmptyState } from '../../components/shared';
 import { TeamCardSkeleton } from '../../components/skeletons';
-import { EmptyState } from '../../components/shared';
-import { ConfirmDialog } from '../../components/shared';
+import { TeamCard, TeamDialog } from '../../components/teams';
+import { useDebounce } from '../../hooks/useDebounce';
+import { useRealtimeTeams } from '../../hooks/useRealtimeTeams';
 import { useTeams } from '../../hooks/useTeams';
 import { useAuthStore } from '../../store/authStore';
-import { useDebounce } from '../../hooks/useDebounce';
-import { Team, TeamRole, CreateTeamDto, UpdateTeamDto } from '../../types/team.types';
+import { CreateTeamDto, Team, TeamRole, UpdateTeamDto } from '../../types/team.types';
 import { toast } from '../../utils/toast';
 
 /**
@@ -33,6 +33,9 @@ export const TeamsPage: React.FC = () => {
     updateTeam,
     deleteTeam,
   } = useTeams();
+
+  // Initialize real-time team updates
+  useRealtimeTeams();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);

@@ -5,12 +5,16 @@ import { TasksController, TeamTasksController } from './tasks.controller';
 import { Task } from './entities/task.entity';
 import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
+import { WebSocketModule } from '../websocket/websocket.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Task]),
     TeamsModule,
     UsersModule,
+    WebSocketModule,
+    NotificationsModule,
   ],
   controllers: [TasksController, TeamTasksController],
   providers: [TasksService],
