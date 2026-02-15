@@ -1,22 +1,22 @@
-import React, { useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
+  Alert,
   Box,
-  TextField,
   Button,
   CircularProgress,
-  Alert,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   FormHelperText,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
 } from '@mui/material';
-import { taskSchema, TaskFormData } from '../../utils/validators';
-import { Task, TaskStatus, TaskPriority, getStatusLabel, getPriorityLabel } from '../../types/task.types';
+import React, { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { Task, TaskPriority, TaskStatus, getPriorityLabel, getStatusLabel } from '../../types/task.types';
 import { Team, TeamMember } from '../../types/team.types';
 import { getFullName } from '../../types/user.types';
+import { TaskFormData, taskSchema } from '../../utils/validators';
 
 export interface TaskFormProps {
   task?: Task;
@@ -66,8 +66,15 @@ export const TaskForm: React.FC<TaskFormProps> = ({
 
   const selectedTeamId = watch('teamId');
 
-  // Notify parent when team changes
+  // Track if component is mounted to prevent calling onTeamChange on initial render
+  const isMounted = React.useRef(false);
+
+  // Notify parent when team changes (but not on initial mount)
   useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
     if (selectedTeamId && onTeamChange) {
       onTeamChange(selectedTeamId);
     }

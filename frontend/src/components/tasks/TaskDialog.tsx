@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { Close as CloseIcon } from '@mui/icons-material';
 import {
+  Box,
   Dialog,
-  DialogTitle,
   DialogContent,
+  DialogTitle,
   IconButton,
   Typography,
-  Box,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
-import { Task, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
+import React, { useEffect, useRef, useState } from 'react';
+import { CreateTaskDto, Task, UpdateTaskDto } from '../../types/task.types';
 import { Team, TeamMember } from '../../types/team.types';
-import { TaskForm } from './TaskForm';
 import { TaskFormData } from '../../utils/validators';
+import { TaskForm } from './TaskForm';
 
 export interface TaskDialogProps {
   open: boolean;
@@ -45,9 +45,16 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
   const isEditMode = !!task;
   const title = isEditMode ? 'Edit Task' : 'Create Task';
 
+  // Track current team ID to prevent duplicate API calls
+  const currentTeamIdRef = useRef<string | null>(null);
+
   // Load team members when team changes
   const handleTeamChange = async (teamId: string) => {
     if (!onLoadTeamMembers) return;
+    
+    // Skip if same team is selected
+    if (currentTeamIdRef.current === teamId) return;
+    currentTeamIdRef.current = teamId;
 
     setLoadingMembers(true);
     try {
@@ -61,13 +68,28 @@ export const TaskDialog: React.FC<TaskDialogProps> = ({
     }
   };
 
-  // Load initial team members if editing or default team
+  // Load initial team members when dialog opens
   useEffect(() => {
-    const teamId = task?.teamId || defaultTeamId;
-    if (open && teamId && onLoadTeamMembers) {
-      handleTeamChange(teamId);
+    if (open) {
+      // Reset state when dialog opens
+      setTeamMembers([]);
+      currentTeamIdRef.current = null;
+      
+      const teamId = task?.teamId || defaultTeamId;
+      if (teamId && onLoadTeamMembers) {
+        currentTeamIdRef.current = teamId;
+        setLoadingMembers(true);
+        onLoadTeamMembers(teamId)
+          .then((members) => setTeamMembers(members))
+          .catch(() => setTeamMembers([]))
+          .finally(() => setLoadingMembers(false));
+      }
+    } else {
+      // Cleanup when dialog closes
+      setTeamMembers([]);
+      setError(null);
     }
-  }, [open, task?.teamId, defaultTeamId]);
+  }, [open, task?.teamId, defaultTeamId, onLoadTeamMembers]);
 
   const handleSubmit = async (data: TaskFormData) => {
     setIsLoading(true);
