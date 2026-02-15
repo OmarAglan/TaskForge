@@ -52,7 +52,7 @@ export const TeamsPage: React.FC = () => {
   }, [loadTeams]);
 
   // Filter teams based on search
-  const filteredTeams = teams.filter((team) => {
+  const filteredTeams = (teams ?? []).filter((team) => {
     const query = debouncedSearch.toLowerCase();
     return (
       team.name.toLowerCase().includes(query) ||

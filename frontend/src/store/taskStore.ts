@@ -57,8 +57,8 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     try {
       const response = await tasksApi.getTasks(mergedFilters);
       set({
-        tasks: response.data,
-        pagination: response.meta,
+        tasks: response.data ?? [],
+        pagination: response.meta ?? null,
         isLoading: false,
       });
     } catch (error) {
@@ -88,8 +88,8 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     try {
       const response = await tasksApi.getMyTasks(mergedFilters);
       set({
-        tasks: response.data,
-        pagination: response.meta,
+        tasks: response.data ?? [],
+        pagination: response.meta ?? null,
         isLoading: false,
       });
     } catch (error) {
@@ -106,8 +106,8 @@ export const useTaskStore = create<TaskState>()((set, get) => ({
     try {
       const response = await tasksApi.getTeamTasks(teamId, filters);
       set({
-        tasks: response.data,
-        pagination: response.meta,
+        tasks: response.data ?? [],
+        pagination: response.meta ?? null,
         isLoading: false,
       });
     } catch (error) {

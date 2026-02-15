@@ -1,39 +1,38 @@
-import React, { useEffect, useState } from 'react';
 import {
+  Add as AddIcon,
+  Assignment as AssignmentIcon,
+  Schedule as ScheduleIcon,
+  Task as TaskIcon,
+  Group as TeamIcon,
+  TrendingUp as TrendingUpIcon,
+} from '@mui/icons-material';
+import {
+  Avatar,
   Box,
+  Button,
   Card,
   CardContent,
+  CircularProgress,
+  Divider,
   Grid,
-  Typography,
-  Button,
-  Avatar,
   List,
   ListItem,
   ListItemAvatar,
   ListItemText,
-  Divider,
   Skeleton,
-  CircularProgress,
+  Typography,
 } from '@mui/material';
-import {
-  Task as TaskIcon,
-  Group as TeamIcon,
-  TrendingUp as TrendingUpIcon,
-  Add as AddIcon,
-  Assignment as AssignmentIcon,
-  Schedule as ScheduleIcon,
-} from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../store/authStore';
+import * as teamsApi from '../../api/teams.api';
+import { TaskDialog, TaskDueDateBadge, TaskPriorityChip, TaskStatusChip } from '../../components/tasks';
+import { TeamDialog } from '../../components/teams';
 import { useTasks } from '../../hooks/useTasks';
 import { useTeams } from '../../hooks/useTeams';
-import { TaskPriorityChip, TaskStatusChip, TaskDueDateBadge } from '../../components/tasks';
-import { TeamDialog } from '../../components/teams';
-import { TaskDialog } from '../../components/tasks';
-import { Task, TaskStatus, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
-import { Team, CreateTeamDto, UpdateTeamDto, TeamMember } from '../../types/team.types';
+import { useAuthStore } from '../../store/authStore';
+import { CreateTaskDto, Task, TaskStatus, UpdateTaskDto } from '../../types/task.types';
+import { CreateTeamDto, Team, TeamMember, UpdateTeamDto } from '../../types/team.types';
 import { toast } from '../../utils/toast';
-import * as teamsApi from '../../api/teams.api';
 
 interface StatCardProps {
   title: string;
@@ -124,11 +123,13 @@ export const DashboardPage: React.FC = () => {
     loadTeams();
   }, []);
 
-  // Calculate stats
-  const myTasksCount = tasks.length;
-  const teamsCount = teams.length;
-  const completedTasks = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
-  const dueTodayTasks = tasks.filter(t => {
+  // Calculate stats (defensive: tasks/teams may be undefined during loading)
+  const taskList = tasks ?? [];
+  const teamList = teams ?? [];
+  const myTasksCount = taskList.length;
+  const teamsCount = teamList.length;
+  const completedTasks = taskList.filter(t => t.status === TaskStatus.COMPLETED).length;
+  const dueTodayTasks = taskList.filter(t => {
     if (!t.dueDate) return false;
     const today = new Date();
     const dueDate = new Date(t.dueDate);
@@ -136,7 +137,7 @@ export const DashboardPage: React.FC = () => {
   });
 
   // Get recent tasks (not completed)
-  const recentTasks = tasks
+  const recentTasks = taskList
     .filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED)
     .slice(0, 5);
 
@@ -369,7 +370,7 @@ export const DashboardPage: React.FC = () => {
       {/* Create Task Dialog */}
       <TaskDialog
         open={taskDialogOpen}
-        teams={teams}
+        teams={teamList}
         onClose={() => setTaskDialogOpen(false)}
         onSuccess={handleTaskSuccess}
         onSubmit={handleCreateTask}

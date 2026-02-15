@@ -1,12 +1,30 @@
-import { get, post, put, patch, del } from './client';
-import type { Task, CreateTaskDto, UpdateTaskDto, FilterTasksDto, TaskStatus } from '../types/task.types';
-import type { PaginatedResponse } from '../types/api.types';
+import type { BackendPaginatedResponse, PaginatedResponse } from '../types/api.types';
+import type { CreateTaskDto, FilterTasksDto, Task, TaskStatus, UpdateTaskDto } from '../types/task.types';
+import { del, get, patch, post, put } from './client';
+
+/**
+ * Normalize backend paginated response to frontend format
+ */
+function normalizePaginated<T>(response: BackendPaginatedResponse<T>): PaginatedResponse<T> {
+  return {
+    data: response.items ?? [],
+    meta: {
+      page: response.page,
+      limit: response.limit,
+      total: response.total,
+      totalPages: response.totalPages,
+      hasNextPage: response.page < response.totalPages,
+      hasPreviousPage: response.page > 1,
+    },
+  };
+}
 
 /**
  * Get all tasks with optional filters
  */
 export async function getTasks(filters?: FilterTasksDto): Promise<PaginatedResponse<Task>> {
-  return get<PaginatedResponse<Task>>('/tasks', filters as Record<string, unknown>);
+  const response = await get<BackendPaginatedResponse<Task>>('/tasks', filters as Record<string, unknown>);
+  return normalizePaginated(response);
 }
 
 /**
@@ -62,7 +80,8 @@ export async function updateTaskStatus(id: string, status: TaskStatus): Promise<
  * Get my tasks (assigned to current user)
  */
 export async function getMyTasks(filters?: Omit<FilterTasksDto, 'assigneeId'>): Promise<PaginatedResponse<Task>> {
-  return get<PaginatedResponse<Task>>('/tasks/me', filters as Record<string, unknown>);
+  const response = await get<BackendPaginatedResponse<Task>>('/tasks/me', filters as Record<string, unknown>);
+  return normalizePaginated(response);
 }
 
 /**
@@ -72,7 +91,8 @@ export async function getTeamTasks(
   teamId: string,
   filters?: Omit<FilterTasksDto, 'teamId'>
 ): Promise<PaginatedResponse<Task>> {
-  return get<PaginatedResponse<Task>>(`/teams/${teamId}/tasks`, filters as Record<string, unknown>);
+  const response = await get<BackendPaginatedResponse<Task>>(`/teams/${teamId}/tasks`, filters as Record<string, unknown>);
+  return normalizePaginated(response);
 }
 
 /**

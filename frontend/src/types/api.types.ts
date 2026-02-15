@@ -32,11 +32,23 @@ export interface PaginationMeta {
 }
 
 /**
- * Paginated response wrapper
+ * Paginated response wrapper (frontend format)
  */
 export interface PaginatedResponse<T> {
   data: T[];
   meta: PaginationMeta;
+}
+
+/**
+ * Backend paginated response format
+ * This matches the actual response from the NestJS backend
+ */
+export interface BackendPaginatedResponse<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 /**

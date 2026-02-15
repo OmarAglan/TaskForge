@@ -93,7 +93,7 @@ const App: React.FC = () => {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <ToastProvider>
-          <BrowserRouter>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
             <AuthProvider>
               <AuthInitializer>
                 <Suspense fallback={<Loading fullScreen text="Loading page..." />}>

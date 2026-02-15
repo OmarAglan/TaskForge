@@ -1,31 +1,31 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Box,
-  Typography,
-  Button,
-  Tabs,
-  Tab,
-  IconButton,
-  Breadcrumbs,
-  Link,
-  CircularProgress,
-} from '@mui/material';
 import {
   ArrowBack as BackIcon,
   Edit as EditIcon,
 } from '@mui/icons-material';
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
-  TeamDialog,
-  TeamStats,
-  TeamMembersList,
+  Box,
+  Breadcrumbs,
+  Button,
+  CircularProgress,
+  IconButton,
+  Link,
+  Tab,
+  Tabs,
+  Typography,
+} from '@mui/material';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom';
+import { ConfirmDialog, EmptyState } from '../../components/shared';
+import {
   AddMemberDialog,
+  TeamDialog,
+  TeamMembersList,
+  TeamStats,
 } from '../../components/teams';
-import { EmptyState, ConfirmDialog } from '../../components/shared';
-import { useTeams } from '../../hooks/useTeams';
 import { useRealtimeTeams } from '../../hooks/useRealtimeTeams';
+import { useTeams } from '../../hooks/useTeams';
 import { useAuthStore } from '../../store/authStore';
-import { Team, TeamRole, TeamMember, CreateTeamDto, UpdateTeamDto, AddMemberDto } from '../../types/team.types';
+import { AddMemberDto, CreateTeamDto, Team, TeamMember, TeamRole, UpdateTeamDto } from '../../types/team.types';
 import { UserSummary } from '../../types/user.types';
 import { toast } from '../../utils/toast';
 
@@ -88,7 +88,7 @@ export const TeamDetailPage: React.FC = () => {
   // Get current user's role in the team
   const getCurrentUserRole = (): TeamRole => {
     if (currentTeam?.ownerId === user?.id) return TeamRole.OWNER;
-    const memberRecord = members.find((m) => m.userId === user?.id);
+    const memberRecord = (members ?? []).find((m) => m.userId === user?.id);
     return memberRecord?.role || TeamRole.MEMBER;
   };
 
@@ -102,7 +102,7 @@ export const TeamDetailPage: React.FC = () => {
     totalTasks: 0, // Would be fetched from API
     completedTasks: 0,
     inProgressTasks: 0,
-    memberCount: members.length || currentTeam?.memberCount || 0,
+    memberCount: (members ?? []).length || currentTeam?.memberCount || 0,
   };
 
   const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
