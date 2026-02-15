@@ -23,6 +23,7 @@ import {
 } from '../../components/teams';
 import { EmptyState, ConfirmDialog } from '../../components/shared';
 import { useTeams } from '../../hooks/useTeams';
+import { useRealtimeTeams } from '../../hooks/useRealtimeTeams';
 import { useAuthStore } from '../../store/authStore';
 import { Team, TeamRole, TeamMember, CreateTeamDto, UpdateTeamDto, AddMemberDto } from '../../types/team.types';
 import { UserSummary } from '../../types/user.types';
@@ -92,6 +93,9 @@ export const TeamDetailPage: React.FC = () => {
   };
 
   const currentUserRole = getCurrentUserRole();
+
+  // Initialize real-time team updates for member list
+  useRealtimeTeams();
 
   // Calculate team stats
   const teamStats = {

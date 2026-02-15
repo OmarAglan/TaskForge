@@ -93,7 +93,14 @@ frontend/
 │   │   ├── shared/           # ConfirmDialog, EmptyState, SearchBar, DateRangePicker, ToastProvider
 │   │   ├── skeletons/        # Skeleton loaders (TeamCardSkeleton, TaskCardSkeleton, TableSkeleton)
 │   │   ├── teams/            # Team UI components
-│   │   └── tasks/            # Task UI components
+│   │   ├── tasks/            # Task UI components
+│   │   ├── notifications/    # Notification components
+│   │   │   ├── NotificationBell.tsx
+│   │   │   ├── NotificationItem.tsx
+│   │   │   └── NotificationsList.tsx
+│   │   └── presence/         # Presence indicators
+│   │       ├── OnlineIndicator.tsx
+│   │       └── UserPresence.tsx
 │   │
 │   ├── contexts/             # React contexts
 │   │   └── AuthContext.tsx
@@ -104,7 +111,16 @@ frontend/
 │   │   ├── useDebounce.ts
 │   │   ├── useConfirm.ts
 │   │   ├── useTeams.ts
-│   │   └── useTasks.ts
+│   │   ├── useTasks.ts
+│   │   ├── useWebSocket.ts       # WebSocket connection hook
+│   │   ├── useRealtimeTasks.ts   # Real-time task updates hook
+│   │   ├── useRealtimeTeams.ts   # Real-time team updates hook
+│   │   └── useNotifications.ts   # Notifications hook
+│   │
+│   ├── services/               # Services
+│   │   ├── websocket/          # WebSocket service
+│   │   │   └── websocket.service.ts
+│   │   └── ...
 │   │
 │   ├── pages/                # Route pages
 │   │   ├── auth/             # Login, Register
@@ -127,7 +143,9 @@ frontend/
 │   │   ├── auth.types.ts
 │   │   ├── team.types.ts
 │   │   ├── task.types.ts
-│   │   └── api.types.ts
+│   │   ├── api.types.ts
+│   │   ├── websocket.types.ts   # WebSocket event types
+│   │   └── notification.types.ts # Notification types
 │   │
 │   ├── utils/                # Utility functions
 │   │   ├── constants.ts
@@ -368,7 +386,21 @@ Navigation is provided via [`frontend/src/components/layout/Sidebar.tsx`](fronte
   - [x] Task detail view + quick status/priority updates
   - [x] Shared UX: confirm dialogs, empty states, search, toast notifications, skeleton loaders
 
-- [ ] Phase 8: Real-time Features
+- [x] Phase 8: Real-time Features
+  - [x] WebSocket service with auto-reconnect
+  - [x] useWebSocket hook for connection management
+  - [x] useRealtimeTasks hook for real-time task updates
+  - [x] useRealtimeTeams hook for real-time team updates
+  - [x] useNotifications hook for notifications
+  - [x] NotificationBell component with unread badge
+  - [x] NotificationItem component
+  - [x] NotificationsList component
+  - [x] ConnectionStatus component
+  - [x] OnlineIndicator and UserPresence components
+  - [x] Integration with App.tsx
+  - [x] Integration with Navbar and pages
+  - [x] Complete documentation (see [REALTIME.md](./REALTIME.md))
+
 - [ ] Phase 9: Analytics Dashboard
 
 ## Troubleshooting
