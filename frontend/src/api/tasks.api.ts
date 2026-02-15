@@ -62,7 +62,7 @@ export async function updateTaskStatus(id: string, status: TaskStatus): Promise<
  * Get my tasks (assigned to current user)
  */
 export async function getMyTasks(filters?: Omit<FilterTasksDto, 'assigneeId'>): Promise<PaginatedResponse<Task>> {
-  return get<PaginatedResponse<Task>>('/tasks/my', filters as Record<string, unknown>);
+  return get<PaginatedResponse<Task>>('/tasks/me', filters as Record<string, unknown>);
 }
 
 /**

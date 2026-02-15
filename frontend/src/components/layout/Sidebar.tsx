@@ -37,7 +37,7 @@ interface NavItem {
 
 const mainNavItems: NavItem[] = [
   { text: 'Dashboard', icon: <DashboardIcon />, path: '/', exact: true },
-  { text: 'My Tasks', icon: <MyTasksIcon />, path: '/tasks/my', exact: true },
+  { text: 'My Tasks', icon: <MyTasksIcon />, path: '/tasks/me', exact: true },
   { text: 'All Tasks', icon: <TaskIcon />, path: '/tasks', exact: true },
   { text: 'Task Board', icon: <BoardIcon />, path: '/tasks/board', exact: true },
   { text: 'Teams', icon: <TeamIcon />, path: '/teams' },

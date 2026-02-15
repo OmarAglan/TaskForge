@@ -244,7 +244,7 @@ export const DashboardPage: React.FC = () => {
             title="View All Tasks"
             description="See your complete task list"
             icon={<AssignmentIcon />}
-            onClick={() => navigate('/tasks/my')}
+            onClick={() => navigate('/tasks/me')}
           />
         </Grid>
       </Grid>
@@ -258,7 +258,7 @@ export const DashboardPage: React.FC = () => {
                 <Typography variant="h6" fontWeight="bold">
                   My Recent Tasks
                 </Typography>
-                <Button size="small" onClick={() => navigate('/tasks/my')}>
+                <Button size="small" onClick={() => navigate('/tasks/me')}>
                   View All
                 </Button>
               </Box>
@@ -312,7 +312,7 @@ export const DashboardPage: React.FC = () => {
                 <Typography variant="h6" fontWeight="bold">
                   Tasks Due Today
                 </Typography>
-                <Button size="small" onClick={() => navigate('/tasks/my')}>
+                <Button size="small" onClick={() => navigate('/tasks/me')}>
                   View All
                 </Button>
               </Box>

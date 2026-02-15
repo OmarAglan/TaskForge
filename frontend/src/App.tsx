@@ -134,7 +134,7 @@ const App: React.FC = () => {
                       {/* Tasks */}
                       <Route path="/tasks" element={<TasksPage />} />
                       <Route path="/tasks/board" element={<TaskBoardPage />} />
-                      <Route path="/tasks/my" element={<MyTasksPage />} />
+                      <Route path="/tasks/me" element={<MyTasksPage />} />
                       <Route path="/tasks/:id" element={<TaskDetailPage />} />
 
                       {/* Analytics - Phase 9 */}

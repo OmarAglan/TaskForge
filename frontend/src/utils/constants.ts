@@ -60,7 +60,7 @@ export const API_ENDPOINTS = {
   // Tasks
   TASKS: '/tasks',
   TASK_BY_ID: (id: string) => `/tasks/${id}`,
-  MY_TASKS: '/tasks/my',
+  MY_TASKS: '/tasks/me',
   TEAM_TASKS: (teamId: string) => `/teams/${teamId}/tasks`,
 
   // Activity

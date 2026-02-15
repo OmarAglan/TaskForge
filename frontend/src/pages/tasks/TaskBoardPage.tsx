@@ -1,34 +1,34 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import {
+  Add as AddIcon,
+  Delete as DeleteIcon,
+  Edit as EditIcon,
+  MoreVert as MoreVertIcon,
+  Visibility as ViewIcon,
+} from '@mui/icons-material';
 import {
   Box,
-  Typography,
   Button,
-  Paper,
   Card,
   CardContent,
   Chip,
   IconButton,
-  Menu,
-  MenuItem,
   ListItemIcon,
   ListItemText,
+  Menu,
+  MenuItem,
+  Paper,
+  Typography,
 } from '@mui/material';
-import {
-  Add as AddIcon,
-  MoreVert as MoreVertIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Visibility as ViewIcon,
-} from '@mui/icons-material';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { TaskDialog, TaskPriorityChip, TaskAssigneeAvatar, TaskDueDateBadge } from '../../components/tasks';
+import * as teamsApi from '../../api/teams.api';
 import { ConfirmDialog } from '../../components/shared';
+import { TaskAssigneeAvatar, TaskDialog, TaskDueDateBadge, TaskPriorityChip } from '../../components/tasks';
 import { useTasks } from '../../hooks/useTasks';
 import { useTeams } from '../../hooks/useTeams';
-import { Task, TaskStatus, getStatusLabel, CreateTaskDto, UpdateTaskDto } from '../../types/task.types';
+import { CreateTaskDto, Task, TaskStatus, UpdateTaskDto, getStatusLabel } from '../../types/task.types';
 import { TeamMember } from '../../types/team.types';
 import { toast } from '../../utils/toast';
-import * as teamsApi from '../../api/teams.api';
 
 const statusColumns: TaskStatus[] = [
   TaskStatus.TODO,
@@ -261,7 +261,7 @@ export const TaskBoardPage: React.FC = () => {
 
   // Group tasks by status
   const tasksByStatus = statusColumns.reduce((acc, status) => {
-    acc[status] = tasks.filter((task) => task.status === status);
+    acc[status] = (tasks || []).filter((task) => task.status === status);
     return acc;
   }, {} as Record<TaskStatus, Task[]>);
 

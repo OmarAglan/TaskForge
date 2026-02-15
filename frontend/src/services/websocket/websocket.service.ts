@@ -38,7 +38,7 @@ class WebSocketService {
 
     this.setState('connecting');
 
-    this.socket = io(WS_URL, {
+    this.socket = io(WS_URL + '/events', {
       path: '/socket.io',
       transports: ['websocket'],
       auth: { token },
