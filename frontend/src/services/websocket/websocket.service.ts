@@ -31,9 +31,14 @@ class WebSocketService {
   connect(token: string) {
     if (this.socket?.connected) return;
 
+    // If there is an old socket still connecting, don't tear it down —
+    // this avoids the "closed before established" error from React 18
+    // strict-mode double-invoking effects.
+    if (this.socket && this.connectionState === 'connecting') return;
+
     // If there is an old socket instance, fully dispose it before reconnecting
     if (this.socket) {
-      this.disconnect();
+      this.cleanupSocket();
     }
 
     this.setState('connecting');
@@ -86,17 +91,26 @@ class WebSocketService {
       this.setState('disconnected');
       return;
     }
+    this.cleanupSocket();
+    this.setState('disconnected');
+  }
+
+  /**
+   * Internal: tear down the current socket without triggering a state change.
+   * Separated so `connect()` can call it before setting 'connecting'.
+   */
+  private cleanupSocket() {
+    if (!this.socket) return;
 
     // Remove all socket listeners to avoid leaks
+    this.socket.removeAllListeners();
     for (const event of this.eventDispatcherInstalled) {
       this.socket.off(event);
     }
 
     this.socket.disconnect();
     this.socket = null;
-
     this.eventDispatcherInstalled.clear();
-    this.setState('disconnected');
   }
 
   getState(): ConnectionState {

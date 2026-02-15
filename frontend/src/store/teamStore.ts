@@ -94,8 +94,8 @@ export const useTeamStore = create<TeamState>()((set, get) => ({
         isLoading: false,
       }));
       return team;
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to create team';
+    } catch (error: any) {
+      const message = error?.message || (error instanceof Error ? error.message : 'Failed to create team');
       set({ isLoading: false, error: message });
       throw error;
     }

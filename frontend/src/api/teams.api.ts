@@ -1,13 +1,13 @@
-import { get, post, put, patch, del } from './client';
 import type {
+  AddMemberDto,
+  CreateTeamDto,
   Team,
   TeamMember,
-  CreateTeamDto,
-  UpdateTeamDto,
-  AddMemberDto,
-  UpdateMemberRoleDto,
   TeamWithMembers,
+  UpdateMemberRoleDto,
+  UpdateTeamDto,
 } from '../types/team.types';
+import { del, get, patch, post } from './client';
 
 /**
  * Get all teams for the current user
@@ -34,7 +34,7 @@ export async function createTeam(data: CreateTeamDto): Promise<Team> {
  * Update team
  */
 export async function updateTeam(id: string, data: UpdateTeamDto): Promise<Team> {
-  return put<Team>(`/teams/${id}`, data);
+  return patch<Team>(`/teams/${id}`, data);
 }
 
 /**

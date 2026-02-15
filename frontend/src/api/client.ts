@@ -164,11 +164,14 @@ apiClient.interceptors.response.use(
     }
 
     // Transform error to consistent format
+    // Backend wraps errors as { success: false, error: { statusCode, message, error, ... } }
+    const backendError = error.response?.data?.error;
+    const rawMessage = backendError?.message ?? error.response?.data?.message ?? error.message ?? 'An unexpected error occurred';
     const apiError: ApiError = {
       statusCode: error.response?.status || 500,
-      message: error.response?.data?.message || error.message || 'An unexpected error occurred',
-      error: error.response?.data?.error,
-      path: error.config?.url,
+      message: Array.isArray(rawMessage) ? rawMessage.join(', ') : rawMessage,
+      error: typeof backendError?.error === 'string' ? backendError.error : (typeof error.response?.data?.error === 'string' ? error.response.data.error : undefined),
+      path: backendError?.path || error.config?.url,
     };
 
     return Promise.reject(apiError);

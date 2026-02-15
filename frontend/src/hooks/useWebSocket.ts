@@ -18,11 +18,16 @@ export function useWebSocket() {
   useEffect(() => {
     if (isAuthenticated && accessToken) {
       websocketService.connect(accessToken);
-      return () => websocketService.disconnect();
+      // Intentionally NOT disconnecting in the cleanup.
+      // React 18 strict-mode double-invokes effects which causes
+      // the socket to be closed before the connection is established.
+      // The service's connect() already guards against duplicate connections,
+      // and we disconnect when isAuthenticated becomes false.
+      return undefined;
     }
 
     websocketService.disconnect();
-    return;
+    return undefined;
   }, [isAuthenticated, accessToken]);
 
   return useMemo(
