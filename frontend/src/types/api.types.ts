@@ -11,9 +11,9 @@ export interface ApiResponse<T> {
 /**
  * API error response
  */
-export interface ApiError {
+export interface ApiError extends Error {
   statusCode: number;
-  message: string | string[];
+  message: string;
   error?: string;
   timestamp?: string;
   path?: string;

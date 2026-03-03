@@ -4,6 +4,13 @@ import { NestFactory } from '@nestjs/core';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 
+function parseCorsOrigins(corsOriginConfig: string): string[] {
+  return corsOriginConfig
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -12,6 +19,19 @@ async function bootstrap() {
   const port = configService.get<number>('app.port', 3000);
   const apiPrefix = configService.get<string>('app.apiPrefix', 'api/v1');
   const corsOrigin = configService.get<string>('app.corsOrigin', 'http://localhost:5173');
+  const parsedCorsOrigins = parseCorsOrigins(corsOrigin);
+  const allowedOrigins = parsedCorsOrigins.length > 0 ? parsedCorsOrigins : ['http://localhost:5173'];
+  const isDevelopment = configService.get<string>('app.nodeEnv', 'development') !== 'production';
+  const cspConnectSrc = ["'self'", ...allowedOrigins.filter((origin) => origin !== '*')];
+
+  if (isDevelopment) {
+    cspConnectSrc.push(
+      'http://localhost:*',
+      'http://127.0.0.1:*',
+      'ws://localhost:*',
+      'ws://127.0.0.1:*',
+    );
+  }
 
   // Security - Helmet middleware for security headers
   app.use(
@@ -22,7 +42,7 @@ async function bootstrap() {
           styleSrc: ["'self'", "'unsafe-inline'"],
           scriptSrc: ["'self'"],
           imgSrc: ["'self'", 'data:', 'https:'],
-          connectSrc: ["'self'", corsOrigin],
+          connectSrc: cspConnectSrc,
         },
       },
       hsts: {
@@ -35,7 +55,32 @@ async function bootstrap() {
 
   // CORS configuration
   app.enableCors({
-    origin: corsOrigin,
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      if (allowedOrigins.includes('*')) {
+        callback(null, true);
+        return;
+      }
+
+      const isExactMatch = allowedOrigins.includes(origin);
+      const isLocalhostOrigin =
+        isDevelopment &&
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+
+      if (isExactMatch || isLocalhostOrigin) {
+        callback(null, true);
+        return;
+      }
+
+      callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],

@@ -34,6 +34,8 @@ const PRIORITY_ORDER: TaskPriority[] = [
   TaskPriority.URGENT,
 ];
 
+const ANALYTICS_TASK_LIMIT = 100;
+
 interface StatCardProps {
   title: string;
   value: string;
@@ -72,7 +74,7 @@ export const AnalyticsPage: React.FC = () => {
         const [tasksResponse, teamsResponse] = await Promise.all([
           tasksApi.getTasks({
             page: 1,
-            limit: 500,
+            limit: ANALYTICS_TASK_LIMIT,
             sortBy: 'createdAt',
             sortOrder: 'DESC',
           }),

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
 import { useAuthStore } from '../store/authStore';
 import type { User } from '../types/user.types';
 import type { LoginDto, RegisterDto } from '../types/auth.types';
@@ -32,20 +32,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     logout,
     clearError,
-    initialize,
   } = useAuthStore();
-
-  const [initialized, setInitialized] = useState(false);
-
-  useEffect(() => {
-    const initAuth = async () => {
-      if (!initialized) {
-        await initialize();
-        setInitialized(true);
-      }
-    };
-    initAuth();
-  }, [initialize, initialized]);
 
   const value: AuthContextType = {
     user,

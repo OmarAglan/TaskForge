@@ -155,8 +155,6 @@ export const RegisterPage: React.FC = () => {
               </Typography>
             </Box>
 
-            text
-
             {/* Error Alert */}
             {error && (
               <Alert severity="error" sx={{ mb: 3 }} onClose={clearError}>

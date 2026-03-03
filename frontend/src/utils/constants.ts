@@ -3,8 +3,12 @@
  */
 
 // Environment variables
-export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
-export const WS_URL = import.meta.env.VITE_WS_URL || 'http://localhost:3000';
+const runtimeOrigin = typeof window !== 'undefined' ? window.location.origin : '';
+const defaultApiUrl = runtimeOrigin ? `${runtimeOrigin}/api/v1` : 'http://localhost:3000/api/v1';
+const defaultWsUrl = runtimeOrigin || 'http://localhost:3000';
+
+export const API_URL = import.meta.env.VITE_API_URL || defaultApiUrl;
+export const WS_URL = import.meta.env.VITE_WS_URL || defaultWsUrl;
 export const APP_NAME = import.meta.env.VITE_APP_NAME || 'TaskForge';
 export const APP_VERSION = import.meta.env.VITE_APP_VERSION || '1.0.0';
 

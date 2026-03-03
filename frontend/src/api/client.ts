@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { ApiError, ApiResponse } from '../types/api.types';
+import { API_URL } from '../utils/constants';
 
 interface BackendErrorObject {
   statusCode?: number;
@@ -19,7 +20,41 @@ const ACCESS_TOKEN_KEY = 'taskforge_access_token';
 const REFRESH_TOKEN_KEY = 'taskforge_refresh_token';
 
 // API base URL from environment
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api/v1';
+const API_BASE_URL = API_URL;
+
+const AUTH_ROUTE_PATTERNS = ['/auth/login', '/auth/register', '/auth/refresh'] as const;
+
+function isAuthRoute(url?: string): boolean {
+  if (!url) {
+    return false;
+  }
+
+  return AUTH_ROUTE_PATTERNS.some((route) => url.includes(route));
+}
+
+function createApiError(error: AxiosError<BackendErrorResponse>): ApiError {
+  const responseData = error.response?.data;
+  const backendError =
+    typeof responseData?.error === 'object' && responseData.error !== null
+      ? responseData.error
+      : undefined;
+  const fallbackMessage =
+    typeof responseData?.error === 'string'
+      ? responseData.error
+      : responseData?.message;
+  const rawMessage = backendError?.message ?? fallbackMessage ?? error.message ?? 'An unexpected error occurred';
+  const message = Array.isArray(rawMessage) ? rawMessage.join(', ') : rawMessage;
+
+  const apiError = new Error(message) as ApiError;
+  apiError.name = 'ApiError';
+  apiError.statusCode = backendError?.statusCode ?? error.response?.status ?? 500;
+  apiError.error =
+    backendError?.error ??
+    (typeof responseData?.error === 'string' ? responseData.error : undefined);
+  apiError.path = backendError?.path || error.config?.url;
+
+  return apiError;
+}
 
 /**
  * Create axios instance with default configuration
@@ -115,9 +150,13 @@ apiClient.interceptors.response.use(
   },
   async (error: AxiosError<BackendErrorResponse>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const shouldTryTokenRefresh =
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isAuthRoute(originalRequest.url);
 
     // Handle 401 Unauthorized - Token expired
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (shouldTryTokenRefresh) {
       if (isRefreshing) {
         // If already refreshing, queue this request
         return new Promise((resolve, reject) => {
@@ -143,7 +182,7 @@ apiClient.interceptors.response.use(
         // No refresh token, logout user
         clearTokens();
         window.location.href = '/login';
-        return Promise.reject(error);
+        return Promise.reject(createApiError(error));
       }
 
       try {
@@ -176,29 +215,7 @@ apiClient.interceptors.response.use(
       }
     }
 
-    // Transform error to consistent format
-    // Backend wraps errors as { success: false, error: { statusCode, message, error, ... } }
-    const responseData = error.response?.data;
-    const backendError =
-      typeof responseData?.error === 'object' && responseData.error !== null
-        ? responseData.error
-        : undefined;
-    const fallbackMessage =
-      typeof responseData?.error === 'string'
-        ? responseData.error
-        : responseData?.message;
-    const rawMessage = backendError?.message ?? fallbackMessage ?? error.message ?? 'An unexpected error occurred';
-
-    const apiError: ApiError = {
-      statusCode: backendError?.statusCode ?? error.response?.status ?? 500,
-      message: Array.isArray(rawMessage) ? rawMessage.join(', ') : rawMessage,
-      error:
-        backendError?.error ??
-        (typeof responseData?.error === 'string' ? responseData.error : undefined),
-      path: backendError?.path || error.config?.url,
-    };
-
-    return Promise.reject(apiError);
+    return Promise.reject(createApiError(error));
   }
 );
 

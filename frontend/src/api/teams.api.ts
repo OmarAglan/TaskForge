@@ -87,5 +87,5 @@ export async function leaveTeam(teamId: string): Promise<void> {
  * Get my teams (teams user is a member of)
  */
 export async function getMyTeams(): Promise<Team[]> {
-  return get<Team[]>('/teams/my');
+  return get<Team[]>('/teams');
 }

@@ -30,14 +30,19 @@ export class UsersService {
    * Create a new user
    */
   async create(registerDto: RegisterDto): Promise<User> {
+    const normalizedEmail = this.normalizeEmail(registerDto.email);
+
     // Check if user already exists
-    const existingUser = await this.findByEmail(registerDto.email);
+    const existingUser = await this.findByEmail(normalizedEmail);
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
 
     // Create new user
-    const user = this.userRepository.create(registerDto);
+    const user = this.userRepository.create({
+      ...registerDto,
+      email: normalizedEmail,
+    });
     return this.userRepository.save(user);
   }
 
@@ -45,7 +50,11 @@ export class UsersService {
    * Find user by email
    */
   async findByEmail(email: string): Promise<User | null> {
-    return this.userRepository.findOne({ where: { email } });
+    const normalizedEmail = this.normalizeEmail(email);
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('LOWER(BTRIM(user.email)) = :email', { email: normalizedEmail })
+      .getOne();
   }
 
   /**
@@ -160,5 +169,9 @@ export class UsersService {
    */
   async findByIdOrNull(id: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { id } });
+  }
+
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
   }
 }
