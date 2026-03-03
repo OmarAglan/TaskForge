@@ -2,6 +2,10 @@
 
 A modern React application for the TaskForge team task management system.
 
+## Deployment
+
+For production deployment steps, see `../DEPLOYMENT.md`.
+
 ## Tech Stack
 
 - **React 18** - UI library

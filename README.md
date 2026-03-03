@@ -1,5 +1,12 @@
 # Tasky - Task Tracking Web Application
 
+> ⚠️ This root README is legacy and does not reflect the current TaskForge stack.
+>
+> For up-to-date setup and deployment:
+> - `backend/README.md`
+> - `frontend/README.md`
+> - `DEPLOYMENT.md`
+
 A modern, full-stack web application for tracking tasks and managing projects with bilingual support (English/Arabic).
 
 ![Project Status](https://img.shields.io/badge/Status-In%20Development-yellow)

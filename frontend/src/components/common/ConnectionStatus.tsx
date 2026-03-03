@@ -3,8 +3,6 @@ import { Box, Tooltip } from '@mui/material';
 import { FiberManualRecord as OnlineIcon } from '@mui/icons-material';
 import { useWebSocket } from '../../hooks/useWebSocket';
 
-type ConnectionState = 'disconnected' | 'connecting' | 'connected';
-
 interface ConnectionStatusProps {
   showLabel?: boolean;
   size?: 'small' | 'medium';

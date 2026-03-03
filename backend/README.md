@@ -2,6 +2,10 @@
 
 Full Stack Project Management Application - NestJS Backend API
 
+## Deployment
+
+For production deployment steps, see `../DEPLOYMENT.md`.
+
 ## 🚀 Features
 
 - **NestJS Framework**: Modular, scalable architecture with TypeScript

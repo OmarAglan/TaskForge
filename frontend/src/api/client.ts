@@ -1,6 +1,19 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { ApiError, ApiResponse } from '../types/api.types';
 
+interface BackendErrorObject {
+  statusCode?: number;
+  message?: string | string[];
+  error?: string;
+  path?: string;
+}
+
+interface BackendErrorResponse {
+  success?: boolean;
+  message?: string | string[];
+  error?: BackendErrorObject | string;
+}
+
 // Storage keys
 const ACCESS_TOKEN_KEY = 'taskforge_access_token';
 const REFRESH_TOKEN_KEY = 'taskforge_refresh_token';
@@ -100,7 +113,7 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
     return response;
   },
-  async (error: AxiosError<ApiError>) => {
+  async (error: AxiosError<BackendErrorResponse>) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
     // Handle 401 Unauthorized - Token expired
@@ -165,12 +178,23 @@ apiClient.interceptors.response.use(
 
     // Transform error to consistent format
     // Backend wraps errors as { success: false, error: { statusCode, message, error, ... } }
-    const backendError = error.response?.data?.error;
-    const rawMessage = backendError?.message ?? error.response?.data?.message ?? error.message ?? 'An unexpected error occurred';
+    const responseData = error.response?.data;
+    const backendError =
+      typeof responseData?.error === 'object' && responseData.error !== null
+        ? responseData.error
+        : undefined;
+    const fallbackMessage =
+      typeof responseData?.error === 'string'
+        ? responseData.error
+        : responseData?.message;
+    const rawMessage = backendError?.message ?? fallbackMessage ?? error.message ?? 'An unexpected error occurred';
+
     const apiError: ApiError = {
-      statusCode: error.response?.status || 500,
+      statusCode: backendError?.statusCode ?? error.response?.status ?? 500,
       message: Array.isArray(rawMessage) ? rawMessage.join(', ') : rawMessage,
-      error: typeof backendError?.error === 'string' ? backendError.error : (typeof error.response?.data?.error === 'string' ? error.response.data.error : undefined),
+      error:
+        backendError?.error ??
+        (typeof responseData?.error === 'string' ? responseData.error : undefined),
       path: backendError?.path || error.config?.url,
     };
 

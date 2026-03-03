@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import {
   Menu as MenuIcon,
-  Notifications as NotificationsIcon,
   Person as PersonIcon,
   Settings as SettingsIcon,
   Logout as LogoutIcon,

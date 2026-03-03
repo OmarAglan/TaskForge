@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, IconButton, ListItem, ListItemIcon, ListItemText, ListItemAvatar, Avatar } from '@mui/material';
+import { Box, Typography, IconButton, ListItem, ListItemIcon, ListItemText } from '@mui/material';
 import { Delete as DeleteIcon, TaskAlt as TaskIcon, GroupAdd as TeamIcon, Info as InfoIcon } from '@mui/icons-material';
 import { NotificationType } from '../../types/notification.types';
 import { formatRelativeTime } from '../../utils/helpers';
