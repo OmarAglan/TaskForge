@@ -8,6 +8,7 @@ import {
   JoinColumn,
   Unique,
 } from 'typeorm';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 import { Team } from './team.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -17,7 +18,7 @@ export enum TeamRole {
   MEMBER = 'member',
 }
 
-@Entity('team_members')
+@Entity({ name: 'team_members', schema: DB_SCHEMA })
 @Unique(['teamId', 'userId'])
 @Index(['teamId'])
 @Index(['userId'])

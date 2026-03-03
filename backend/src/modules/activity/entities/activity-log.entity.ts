@@ -7,11 +7,12 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 import { User } from '../../users/entities/user.entity';
 import { ActivityAction } from '../enums/activity-action.enum';
 import { EntityType } from '../enums/entity-type.enum';
 
-@Entity('activity_logs')
+@Entity({ name: 'activity_logs', schema: DB_SCHEMA })
 @Index(['userId'])
 @Index(['action'])
 @Index(['entityType'])

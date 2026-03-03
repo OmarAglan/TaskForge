@@ -9,11 +9,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 import { Task } from '../../tasks/entities/task.entity';
 import { User } from '../../users/entities/user.entity';
 import { TeamMember } from './team-member.entity';
 
-@Entity('teams')
+@Entity({ name: 'teams', schema: DB_SCHEMA })
 @Index(['ownerId'])
 @Index(['name'])
 export class Team {

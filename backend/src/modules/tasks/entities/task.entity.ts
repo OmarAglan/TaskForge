@@ -8,6 +8,7 @@ import {
   Index,
   JoinColumn,
 } from 'typeorm';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 import { Team } from '../../teams/entities/team.entity';
 import { User } from '../../users/entities/user.entity';
 
@@ -26,7 +27,7 @@ export enum TaskPriority {
   URGENT = 'urgent',
 }
 
-@Entity('tasks')
+@Entity({ name: 'tasks', schema: DB_SCHEMA })
 @Index(['teamId'])
 @Index(['assignedToId'])
 @Index(['createdById'])

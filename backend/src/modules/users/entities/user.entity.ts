@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import * as bcrypt from 'bcrypt';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 
 export enum UserRole {
   OWNER = 'owner',
@@ -18,7 +19,7 @@ export enum UserRole {
   MEMBER = 'member',
 }
 
-@Entity('users')
+@Entity({ name: 'users', schema: DB_SCHEMA })
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;

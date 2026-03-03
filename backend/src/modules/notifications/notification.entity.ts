@@ -7,6 +7,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { DB_SCHEMA } from '@common/constants/database.constants';
 import { User } from '../users/entities/user.entity';
 
 export enum NotificationType {
@@ -17,7 +18,7 @@ export enum NotificationType {
   TEAM_MEMBER_REMOVED = 'TEAM_MEMBER_REMOVED',
 }
 
-@Entity('notifications')
+@Entity({ name: 'notifications', schema: DB_SCHEMA })
 @Index(['userId'])
 @Index(['read'])
 @Index(['createdAt'])
