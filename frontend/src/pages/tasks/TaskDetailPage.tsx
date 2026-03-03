@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Avatar,
   Box,
   Typography,
   Button,
@@ -10,9 +11,16 @@ import {
   IconButton,
   Divider,
   CircularProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Stack,
+  TextField,
 } from '@mui/material';
 import {
   ArrowBack as BackIcon,
+  ChatBubbleOutline as CommentIcon,
   Edit as EditIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
@@ -27,9 +35,11 @@ import {
   TaskStatusSelect,
 } from '../../components/tasks';
 import { ConfirmDialog, EmptyState } from '../../components/shared';
+import * as activityApi from '../../api/activity.api';
 import { useTasks } from '../../hooks/useTasks';
 import { useTeams } from '../../hooks/useTeams';
 import { Task, TaskStatus, UpdateTaskDto } from '../../types/task.types';
+import { ActivityLog, getActionLabel } from '../../types/activity.types';
 import { TeamMember } from '../../types/team.types';
 import { getFullName } from '../../types/user.types';
 import { toast } from '../../utils/toast';
@@ -57,17 +67,37 @@ export const TaskDetailPage: React.FC = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [isActivitiesLoading, setIsActivitiesLoading] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const [isPostingComment, setIsPostingComment] = useState(false);
 
   // Load task on mount
   useEffect(() => {
     if (id) {
       loadTask(id);
       loadTeams();
+      loadTaskActivities(id);
     }
     return () => {
       clearCurrentTask();
     };
   }, [id, loadTask, loadTeams, clearCurrentTask]);
+
+  const loadTaskActivities = async (taskId: string) => {
+    setIsActivitiesLoading(true);
+    try {
+      const response = await activityApi.getEntityActivities('task', taskId, {
+        page: 1,
+        limit: 50,
+      });
+      setActivities(response.data);
+    } catch {
+      toast.error('Failed to load task activity');
+    } finally {
+      setIsActivitiesLoading(false);
+    }
+  };
 
   const handleBack = () => {
     navigate('/tasks');
@@ -83,7 +113,10 @@ export const TaskDetailPage: React.FC = () => {
 
   const handleEditSuccess = () => {
     setEditDialogOpen(false);
-    if (id) loadTask(id);
+    if (id) {
+      loadTask(id);
+      loadTaskActivities(id);
+    }
     toast.success('Task updated successfully');
   };
 
@@ -99,12 +132,42 @@ export const TaskDetailPage: React.FC = () => {
   const handleStatusChange = async (taskId: string, newStatus: TaskStatus) => {
     try {
       await updateTaskStatus(taskId, newStatus);
-      if (id) loadTask(id);
+      if (id) {
+        loadTask(id);
+        loadTaskActivities(id);
+      }
       toast.success('Status updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     }
   };
+
+  const handleAddComment = async () => {
+    if (!currentTask) {
+      return;
+    }
+
+    const trimmedComment = commentText.trim();
+    if (!trimmedComment) {
+      return;
+    }
+
+    setIsPostingComment(true);
+    try {
+      await activityApi.addTaskComment(currentTask.id, trimmedComment);
+      setCommentText('');
+      await loadTaskActivities(currentTask.id);
+      toast.success('Comment added');
+    } catch {
+      toast.error('Failed to add comment');
+    } finally {
+      setIsPostingComment(false);
+    }
+  };
+
+  const comments = activities.filter((activity) => {
+    return typeof activity.metadata?.comment === 'string';
+  });
 
   const handleDeleteClick = () => {
     setDeleteConfirmOpen(true);
@@ -202,14 +265,141 @@ export const TaskDetailPage: React.FC = () => {
             </Typography>
           </Paper>
 
-          {/* Activity/Comments Placeholder */}
+          {/* Activity Feed */}
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
               Activity
             </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Activity log and comments will be available in a future update.
+            {isActivitiesLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+                <CircularProgress size={24} />
+              </Box>
+            ) : activities.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                No activity yet.
+              </Typography>
+            ) : (
+              <List disablePadding>
+                {activities.map((activity, index) => {
+                  const comment =
+                    typeof activity.metadata?.comment === 'string'
+                      ? activity.metadata.comment
+                      : undefined;
+                  const actorName = activity.user
+                    ? getFullName(activity.user)
+                    : 'System';
+
+                  return (
+                    <React.Fragment key={activity.id}>
+                      <ListItem alignItems="flex-start" disablePadding sx={{ py: 1 }}>
+                        <ListItemAvatar>
+                          <Avatar sx={{ width: 32, height: 32, bgcolor: comment ? 'secondary.main' : 'primary.main' }}>
+                            {comment ? <CommentIcon fontSize="small" /> : actorName.charAt(0)}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography variant="body2">
+                              <strong>{actorName}</strong> {getActionLabel(activity.action)}
+                            </Typography>
+                          }
+                          secondary={
+                            <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+                              {comment && (
+                                <Typography variant="body2" color="text.primary">
+                                  {comment}
+                                </Typography>
+                              )}
+                              <Typography variant="caption" color="text.secondary">
+                                {format(new Date(activity.createdAt), 'MMM d, yyyy h:mm a')}
+                              </Typography>
+                            </Stack>
+                          }
+                        />
+                      </ListItem>
+                      {index < activities.length - 1 && <Divider component="li" />}
+                    </React.Fragment>
+                  );
+                })}
+              </List>
+            )}
+          </Paper>
+
+          {/* Comments */}
+          <Paper sx={{ p: 3, mt: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Comments
             </Typography>
+
+            <Stack spacing={2}>
+              <TextField
+                multiline
+                minRows={3}
+                maxRows={6}
+                placeholder="Add a comment..."
+                value={commentText}
+                onChange={(event) => setCommentText(event.target.value)}
+                fullWidth
+              />
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  onClick={handleAddComment}
+                  disabled={!commentText.trim() || isPostingComment}
+                  startIcon={isPostingComment ? <CircularProgress size={16} color="inherit" /> : undefined}
+                >
+                  Add Comment
+                </Button>
+              </Box>
+            </Stack>
+
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Recent comments
+              </Typography>
+              {comments.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No comments yet.
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {comments.map((commentActivity, index) => {
+                    const commentAuthor = commentActivity.user
+                      ? getFullName(commentActivity.user)
+                      : 'User';
+                    const commentBody =
+                      typeof commentActivity.metadata?.comment === 'string'
+                        ? commentActivity.metadata.comment
+                        : '';
+
+                    return (
+                      <React.Fragment key={`${commentActivity.id}-comment`}>
+                        <ListItem disablePadding sx={{ py: 1 }}>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2" fontWeight="medium">
+                                {commentAuthor}
+                              </Typography>
+                            }
+                            secondary={
+                              <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+                                <Typography variant="body2" color="text.primary">
+                                  {commentBody}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary">
+                                  {format(new Date(commentActivity.createdAt), 'MMM d, yyyy h:mm a')}
+                                </Typography>
+                              </Stack>
+                            }
+                          />
+                        </ListItem>
+                        {index < comments.length - 1 && <Divider component="li" />}
+                      </React.Fragment>
+                    );
+                  })}
+                </List>
+              )}
+            </Box>
           </Paper>
         </Grid>
 

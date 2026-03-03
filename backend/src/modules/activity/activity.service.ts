@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Between, LessThan, Repository } from 'typeorm';
+import { Brackets, LessThan, Repository } from 'typeorm';
 import { WebSocketService } from '../websocket/websocket.service';
 import { CreateActivityLogDto } from './dto/create-activity-log.dto';
 import { FilterActivityLogsDto } from './dto/filter-activity-logs.dto';
@@ -180,14 +180,21 @@ export class ActivityService {
         const queryBuilder = this.activityLogRepository
             .createQueryBuilder('activity')
             .leftJoinAndSelect('activity.user', 'user')
-            .where('activity.entityType = :entityType', { entityType: EntityType.TEAM })
-            .andWhere('activity.entityId = :teamId', { teamId })
-            .orWhere(
-                '(activity.entityType = :taskType AND activity.metadata @> :teamMetadata)',
-                {
-                    taskType: EntityType.TASK,
-                    teamMetadata: JSON.stringify({ teamId }),
-                },
+            .where(
+                new Brackets((query) => {
+                    query
+                        .where(
+                            '(activity.entityType = :teamType AND activity.entityId = :teamId)',
+                            { teamType: EntityType.TEAM, teamId },
+                        )
+                        .orWhere(
+                            '(activity.entityType = :taskType AND activity.metadata @> :teamMetadata)',
+                            {
+                                taskType: EntityType.TASK,
+                                teamMetadata: JSON.stringify({ teamId }),
+                            },
+                        );
+                }),
             );
 
         // Apply additional filters

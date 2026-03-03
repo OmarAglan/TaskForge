@@ -1,43 +1,43 @@
 import { UserSummary } from './user.types';
 
 /**
- * Activity action enumeration
+ * Backend activity action values
  */
-export enum ActivityAction {
-  CREATE = 'create',
-  UPDATE = 'update',
-  DELETE = 'delete',
-  ASSIGN = 'assign',
-  UNASSIGN = 'unassign',
-  STATUS_CHANGE = 'status_change',
-  COMMENT = 'comment',
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-}
+export type ActivityAction =
+  | 'login'
+  | 'logout'
+  | 'register'
+  | 'password_change'
+  | 'team_create'
+  | 'team_update'
+  | 'team_delete'
+  | 'team_member_add'
+  | 'team_member_remove'
+  | 'team_member_role_update'
+  | 'task_create'
+  | 'task_update'
+  | 'task_delete'
+  | 'task_assign'
+  | 'task_status_change'
+  | 'task_priority_change'
+  | 'user_update'
+  | 'user_delete';
 
-/**
- * Entity type enumeration
- */
-export enum EntityType {
-  USER = 'user',
-  TEAM = 'team',
-  TASK = 'task',
-  TEAM_MEMBER = 'team_member',
-}
+export type EntityType = 'user' | 'team' | 'task' | 'team_member';
 
 /**
  * Activity log entity interface
  */
 export interface ActivityLog {
   id: string;
-  action: ActivityAction;
-  entityType: EntityType;
-  entityId: string;
-  userId: string;
-  user?: UserSummary;
-  metadata?: Record<string, unknown>;
-  ipAddress?: string;
-  userAgent?: string;
+  action: ActivityAction | string;
+  entityType: EntityType | string | null;
+  entityId: string | null;
+  userId: string | null;
+  user?: UserSummary | null;
+  metadata?: Record<string, unknown> | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
   createdAt: string;
 }
 
@@ -56,46 +56,48 @@ export interface FilterActivityLogsDto {
 }
 
 /**
- * Activity statistics
+ * Activity statistics (backend shape)
  */
 export interface ActivityStats {
-  totalActivities: number;
-  activitiesByAction: Record<ActivityAction, number>;
-  activitiesByEntityType: Record<EntityType, number>;
-  recentActivities: ActivityLog[];
-  dailyActivityCount: Array<{
-    date: string;
-    count: number;
-  }>;
+  totalActions: number;
+  actionsByType: Record<string, number>;
+  actionsByEntityType: Record<string, number>;
+  recentActivity: ActivityLog[];
+  mostActiveUsers: Array<{ userId: string; actionCount: number }>;
 }
 
-/**
- * Get action display label
- */
-export function getActionLabel(action: ActivityAction): string {
-  const labels: Record<ActivityAction, string> = {
-    [ActivityAction.CREATE]: 'Created',
-    [ActivityAction.UPDATE]: 'Updated',
-    [ActivityAction.DELETE]: 'Deleted',
-    [ActivityAction.ASSIGN]: 'Assigned',
-    [ActivityAction.UNASSIGN]: 'Unassigned',
-    [ActivityAction.STATUS_CHANGE]: 'Status Changed',
-    [ActivityAction.COMMENT]: 'Commented',
-    [ActivityAction.LOGIN]: 'Logged In',
-    [ActivityAction.LOGOUT]: 'Logged Out',
+export function getActionLabel(action: string): string {
+  const labels: Record<string, string> = {
+    login: 'Logged In',
+    logout: 'Logged Out',
+    register: 'Registered',
+    password_change: 'Changed Password',
+    team_create: 'Created Team',
+    team_update: 'Updated Team',
+    team_delete: 'Deleted Team',
+    team_member_add: 'Added Team Member',
+    team_member_remove: 'Removed Team Member',
+    team_member_role_update: 'Updated Member Role',
+    task_create: 'Created Task',
+    task_update: 'Updated Task',
+    task_delete: 'Deleted Task',
+    task_assign: 'Assigned Task',
+    task_status_change: 'Changed Task Status',
+    task_priority_change: 'Changed Task Priority',
+    user_update: 'Updated Profile',
+    user_delete: 'Deleted User',
   };
-  return labels[action];
+
+  return labels[action] ?? action.replace(/_/g, ' ');
 }
 
-/**
- * Get entity type display label
- */
-export function getEntityTypeLabel(entityType: EntityType): string {
-  const labels: Record<EntityType, string> = {
-    [EntityType.USER]: 'User',
-    [EntityType.TEAM]: 'Team',
-    [EntityType.TASK]: 'Task',
-    [EntityType.TEAM_MEMBER]: 'Team Member',
+export function getEntityTypeLabel(entityType: string): string {
+  const labels: Record<string, string> = {
+    user: 'User',
+    team: 'Team',
+    task: 'Task',
+    team_member: 'Team Member',
   };
-  return labels[entityType];
+
+  return labels[entityType] ?? entityType;
 }

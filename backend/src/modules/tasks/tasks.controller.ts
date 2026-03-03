@@ -15,6 +15,7 @@ import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { FilterTasksDto } from './dto/filter-tasks.dto';
+import { CreateTaskCommentDto } from './dto/create-task-comment.dto';
 import { TaskStatus } from './entities/task.entity';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -177,6 +178,30 @@ export class TasksController {
       success: true,
       data: task,
       message: 'Task unassigned successfully',
+    };
+  }
+
+  /**
+   * POST /tasks/:id/comments
+   * Add a comment entry to task activity feed
+   */
+  @Post(':id/comments')
+  @HttpCode(HttpStatus.CREATED)
+  async addComment(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+    @Body() createTaskCommentDto: CreateTaskCommentDto,
+  ) {
+    const activity = await this.tasksService.addComment(
+      id,
+      userId,
+      createTaskCommentDto.comment,
+    );
+
+    return {
+      success: true,
+      data: activity,
+      message: 'Comment added successfully',
     };
   }
 

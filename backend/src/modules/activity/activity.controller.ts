@@ -2,6 +2,7 @@ import {
     Controller,
     ForbiddenException,
     Get,
+    NotFoundException,
     Param,
     ParseIntPipe,
     ParseUUIDPipe,
@@ -9,9 +10,13 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { Task } from '../tasks/entities/task.entity';
+import { TeamMember } from '../teams/entities/team-member.entity';
 import { UserRole } from '../users/entities/user.entity';
 import { ActivityService } from './activity.service';
 import { FilterActivityLogsDto } from './dto/filter-activity-logs.dto';
@@ -25,7 +30,13 @@ import {
 @Controller('activity')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class ActivityController {
-    constructor(private readonly activityService: ActivityService) { }
+    constructor(
+        private readonly activityService: ActivityService,
+        @InjectRepository(TeamMember)
+        private readonly teamMemberRepository: Repository<TeamMember>,
+        @InjectRepository(Task)
+        private readonly taskRepository: Repository<Task>,
+    ) { }
 
     /**
      * Get all activities (Admin only)
@@ -64,19 +75,20 @@ export class ActivityController {
         @Req() req: any,
     ): Promise<PaginatedResult<ActivityLog>> {
         // Users can only see activities for entities they have access to
-        // This should be validated based on team membership, task ownership, etc.
-        // For now, we'll allow access if user is admin or it's their own activity
         const userId = req.user.id;
         const isAdmin = req.user.role === UserRole.ADMIN;
 
         if (!isAdmin) {
-            // Check if user has access to this entity
-            // This would need to be implemented based on your business logic
-            // For example, checking team membership for team-related activities
-            // For now, we'll restrict to admins only for entity queries
-            throw new ForbiddenException(
-                'You do not have permission to view these activities',
-            );
+            if (entityType === EntityType.USER) {
+                if (entityId !== userId) {
+                    throw new ForbiddenException(
+                        'You do not have permission to view these activities',
+                    );
+                }
+            } else {
+                const teamId = await this.resolveTeamIdForEntity(entityType, entityId);
+                await this.assertTeamMembership(teamId, userId);
+            }
         }
 
         return this.activityService.findByEntity(entityType, entityId, filterDto);
@@ -92,9 +104,13 @@ export class ActivityController {
         @Query() filterDto: FilterActivityLogsDto,
         @Req() req: any,
     ): Promise<PaginatedResult<ActivityLog>> {
-        // In a real application, you would validate that the user is a member of the team
-        // For now, we'll allow access for demonstration purposes
-        // TODO: Add team membership validation
+        const userId = req.user.id;
+        const isAdmin = req.user.role === UserRole.ADMIN;
+
+        if (!isAdmin) {
+            await this.assertTeamMembership(teamId, userId);
+        }
+
         return this.activityService.findByTeam(teamId, filterDto);
     }
 
@@ -139,6 +155,60 @@ export class ActivityController {
             targetUserId,
             startDate,
             endDate,
+        );
+    }
+
+    private async assertTeamMembership(
+        teamId: string,
+        userId: string,
+    ): Promise<void> {
+        const membership = await this.teamMemberRepository.findOne({
+            where: { teamId, userId },
+        });
+
+        if (!membership) {
+            throw new ForbiddenException(
+                'You do not have permission to view these activities',
+            );
+        }
+    }
+
+    private async resolveTeamIdForEntity(
+        entityType: EntityType,
+        entityId: string,
+    ): Promise<string> {
+        if (entityType === EntityType.TEAM) {
+            return entityId;
+        }
+
+        if (entityType === EntityType.TASK) {
+            const task = await this.taskRepository.findOne({
+                where: { id: entityId },
+                select: ['id', 'teamId'],
+            });
+
+            if (!task) {
+                throw new NotFoundException('Task not found');
+            }
+
+            return task.teamId;
+        }
+
+        if (entityType === EntityType.TEAM_MEMBER) {
+            const teamMember = await this.teamMemberRepository.findOne({
+                where: { id: entityId },
+                select: ['id', 'teamId'],
+            });
+
+            if (!teamMember) {
+                throw new NotFoundException('Team member not found');
+            }
+
+            return teamMember.teamId;
+        }
+
+        throw new ForbiddenException(
+            'You do not have permission to view these activities',
         );
     }
 }

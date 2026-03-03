@@ -7,6 +7,7 @@ import { TeamsModule } from '../teams/teams.module';
 import { UsersModule } from '../users/users.module';
 import { WebSocketModule } from '../websocket/websocket.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { ActivityModule } from '../activity/activity.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     UsersModule,
     WebSocketModule,
     NotificationsModule,
+    ActivityModule,
   ],
   controllers: [TasksController, TeamTasksController],
   providers: [TasksService],

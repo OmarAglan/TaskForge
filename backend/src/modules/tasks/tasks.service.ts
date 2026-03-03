@@ -14,6 +14,10 @@ import { TeamMember, TeamRole } from '../teams/entities/team-member.entity';
 import { WebSocketService } from '../websocket/websocket.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { NotificationType } from '../notifications/notification.entity';
+import { ActivityService } from '../activity/activity.service';
+import { ActivityAction } from '../activity/enums/activity-action.enum';
+import { EntityType } from '../activity/enums/entity-type.enum';
+import { ActivityLog } from '../activity/entities/activity-log.entity';
 
 export interface PaginatedResult<T> {
   items: T[];
@@ -47,6 +51,7 @@ export class TasksService {
     private readonly teamMemberRepository: Repository<TeamMember>,
     private readonly websocketService: WebSocketService,
     private readonly notificationsService: NotificationsService,
+    private readonly activityService: ActivityService,
   ) {}
 
   /**
@@ -469,6 +474,34 @@ export class TasksService {
     });
 
     return updatedTask;
+  }
+
+  /**
+   * Add a comment entry to task activity feed
+   */
+  async addComment(
+    id: string,
+    userId: string,
+    comment: string,
+  ): Promise<ActivityLog> {
+    const trimmedComment = comment.trim();
+    if (!trimmedComment) {
+      throw new BadRequestException('Comment cannot be empty');
+    }
+
+    const task = await this.findOne(id, userId);
+
+    return this.activityService.log({
+      userId,
+      action: ActivityAction.TASK_UPDATE,
+      entityType: EntityType.TASK,
+      entityId: task.id,
+      metadata: {
+        teamId: task.teamId,
+        comment: trimmedComment,
+        taskTitle: task.title,
+      },
+    });
   }
 
   /**
