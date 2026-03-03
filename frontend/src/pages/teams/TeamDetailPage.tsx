@@ -291,7 +291,7 @@ export const TeamDetailPage: React.FC = () => {
           title="No tasks yet"
           description="Create tasks for this team to start tracking work."
           actionLabel="Create Task"
-          onAction={() => navigate(`/tasks/new?teamId=${currentTeam.id}`)}
+          onAction={() => navigate(`/tasks?teamId=${currentTeam.id}`)}
         />
       </TabPanel>
 

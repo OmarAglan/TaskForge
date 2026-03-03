@@ -19,6 +19,7 @@ export function useTeams() {
     createTeam: storeCreateTeam,
     updateTeam: storeUpdateTeam,
     deleteTeam: storeDeleteTeam,
+    leaveTeam: storeLeaveTeam,
     fetchMembers,
     addMember: storeAddMember,
     removeMember: storeRemoveMember,
@@ -92,6 +93,20 @@ export function useTeams() {
     [storeDeleteTeam]
   );
 
+  // Leave team with toast feedback
+  const leaveTeam = useCallback(
+    async (id: string) => {
+      try {
+        await storeLeaveTeam(id);
+        toast.success('You left the team successfully');
+      } catch (err) {
+        toast.error('Failed to leave team');
+        throw err;
+      }
+    },
+    [storeLeaveTeam]
+  );
+
   // Load team members
   const loadMembers = useCallback(
     async (teamId: string) => {
@@ -163,6 +178,7 @@ export function useTeams() {
     createTeam,
     updateTeam,
     deleteTeam,
+    leaveTeam,
     loadMembers,
     addMember,
     removeMember,

@@ -32,6 +32,7 @@ export const TeamsPage: React.FC = () => {
     createTeam,
     updateTeam,
     deleteTeam,
+    leaveTeam,
   } = useTeams();
 
   // Initialize real-time team updates
@@ -43,6 +44,9 @@ export const TeamsPage: React.FC = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [teamToDelete, setTeamToDelete] = useState<Team | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [leaveConfirmOpen, setLeaveConfirmOpen] = useState(false);
+  const [teamToLeave, setTeamToLeave] = useState<Team | null>(null);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const debouncedSearch = useDebounce(searchQuery, 300);
 
@@ -82,9 +86,9 @@ export const TeamsPage: React.FC = () => {
     setDeleteConfirmOpen(true);
   }, []);
 
-  const handleLeave = useCallback(async (_team: Team) => {
-    // Leave team functionality would be implemented here
-    toast.info('Leave team functionality coming soon');
+  const handleLeave = useCallback((team: Team) => {
+    setTeamToLeave(team);
+    setLeaveConfirmOpen(true);
   }, []);
 
   const handleCreateClick = () => {
@@ -133,6 +137,26 @@ export const TeamsPage: React.FC = () => {
   const handleCancelDelete = () => {
     setDeleteConfirmOpen(false);
     setTeamToDelete(null);
+  };
+
+  const handleConfirmLeave = async () => {
+    if (!teamToLeave) return;
+
+    setIsLeaving(true);
+    try {
+      await leaveTeam(teamToLeave.id);
+      setLeaveConfirmOpen(false);
+      setTeamToLeave(null);
+    } catch {
+      // Error handled in hook
+    } finally {
+      setIsLeaving(false);
+    }
+  };
+
+  const handleCancelLeave = () => {
+    setLeaveConfirmOpen(false);
+    setTeamToLeave(null);
   };
 
   return (
@@ -232,6 +256,24 @@ export const TeamsPage: React.FC = () => {
         showWarningIcon
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+      />
+
+      {/* Leave Team Confirmation Dialog */}
+      <ConfirmDialog
+        open={leaveConfirmOpen}
+        title="Leave Team"
+        message={
+          <>
+            Are you sure you want to leave <strong>{teamToLeave?.name}</strong>?
+          </>
+        }
+        confirmText="Leave Team"
+        cancelText="Cancel"
+        confirmColor="warning"
+        isLoading={isLeaving}
+        showWarningIcon
+        onConfirm={handleConfirmLeave}
+        onCancel={handleCancelLeave}
       />
     </Box>
   );

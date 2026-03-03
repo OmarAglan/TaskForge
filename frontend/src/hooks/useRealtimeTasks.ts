@@ -1,4 +1,6 @@
 import { useCallback, useEffect } from 'react';
+import { normalizeTask } from '../api/tasks.api';
+import type { BackendTask } from '../api/tasks.api';
 import { websocketService } from '../services/websocket/websocket.service';
 import { useTaskStore } from '../store/taskStore';
 import { WebSocketEvents, type TaskEventPayload } from '../types/websocket.types';
@@ -14,15 +16,16 @@ export function useRealtimeTasks(teamId?: string) {
     const handleTaskCreated = useCallback(
         (payload: TaskEventPayload) => {
             // Don't add if we already have it (could be from our own optimistic update)
-            addTask(payload.task);
-            toast.success(`New task created: ${payload.task.title}`);
+            const normalizedTask = normalizeTask(payload.task as BackendTask);
+            addTask(normalizedTask);
+            toast.success(`New task created: ${normalizedTask.title}`);
         },
         [addTask],
     );
 
     const handleTaskUpdated = useCallback(
         (payload: TaskEventPayload) => {
-            updateTaskFromWS(payload.task);
+            updateTaskFromWS(normalizeTask(payload.task as BackendTask));
         },
         [updateTaskFromWS],
     );
@@ -36,15 +39,16 @@ export function useRealtimeTasks(teamId?: string) {
 
     const handleTaskStatusChanged = useCallback(
         (payload: TaskEventPayload) => {
-            updateTaskFromWS(payload.task);
-            toast.info(`Task "${payload.task.title}" status changed to ${payload.newStatus}`);
+            const normalizedTask = normalizeTask(payload.task as BackendTask);
+            updateTaskFromWS(normalizedTask);
+            toast.info(`Task "${normalizedTask.title}" status changed to ${payload.newStatus}`);
         },
         [updateTaskFromWS],
     );
 
     const handleTaskAssigned = useCallback(
         (payload: TaskEventPayload) => {
-            updateTaskFromWS(payload.task);
+            updateTaskFromWS(normalizeTask(payload.task as BackendTask));
             // Show notification only if assigned to current user (handled by useNotifications)
         },
         [updateTaskFromWS],

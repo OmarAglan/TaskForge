@@ -167,6 +167,24 @@ export class TeamsController {
   }
 
   /**
+   * POST /teams/:id/leave
+   * Leave a team (non-owner members only)
+   */
+  @Post(':id/leave')
+  @HttpCode(HttpStatus.OK)
+  @LogActivity(ActivityAction.TEAM_MEMBER_REMOVE, EntityType.TEAM_MEMBER)
+  async leaveTeam(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    await this.teamsService.leaveTeam(id, userId);
+    return {
+      success: true,
+      message: 'Left team successfully',
+    };
+  }
+
+  /**
    * PATCH /teams/:id/members/:memberId/role
    * Update a member's role
    */

@@ -435,6 +435,43 @@ export class TasksService {
   }
 
   /**
+   * Remove assignee from a task (team admin or creator)
+   */
+  async unassignTask(id: string, userId: string): Promise<Task> {
+    const task = await this.taskRepository.findOne({
+      where: { id },
+    });
+
+    if (!task) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+
+    // Check permissions
+    const userRole = await this.getUserRoleInTeam(task.teamId, userId);
+    const isCreator = task.createdById === userId;
+    const canUnassign =
+      userRole === TeamRole.OWNER ||
+      userRole === TeamRole.ADMIN ||
+      isCreator;
+
+    if (!canUnassign) {
+      throw new ForbiddenException(
+        'You do not have permission to unassign this task',
+      );
+    }
+
+    const oldAssigneeId = task.assignedToId;
+    task.assignedToId = null;
+    const updatedTask = await this.taskRepository.save(task);
+
+    this.websocketService.emitTaskUpdated(updatedTask, userId, {
+      assignedToId: { old: oldAssigneeId, new: null },
+    });
+
+    return updatedTask;
+  }
+
+  /**
    * Update task status (assignee, creator, or team admin)
    */
   async updateStatus(

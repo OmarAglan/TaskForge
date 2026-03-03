@@ -17,6 +17,7 @@ interface TeamState {
   createTeam: (data: CreateTeamDto) => Promise<Team>;
   updateTeam: (id: string, data: UpdateTeamDto) => Promise<Team>;
   deleteTeam: (id: string) => Promise<void>;
+  leaveTeam: (id: string) => Promise<void>;
   fetchMembers: (teamId: string) => Promise<void>;
   addMember: (teamId: string, data: AddMemberDto) => Promise<TeamMember>;
   removeMember: (teamId: string, memberId: string) => Promise<void>;
@@ -131,6 +132,24 @@ export const useTeamStore = create<TeamState>()((set, get) => ({
       }));
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to delete team';
+      set({ isLoading: false, error: message });
+      throw error;
+    }
+  },
+
+  // Leave team
+  leaveTeam: async (id: string) => {
+    set({ isLoading: true, error: null });
+    try {
+      await teamsApi.leaveTeam(id);
+      set((state) => ({
+        teams: state.teams.filter((team) => team.id !== id),
+        currentTeam: state.currentTeam?.id === id ? null : state.currentTeam,
+        members: state.currentTeam?.id === id ? [] : state.members,
+        isLoading: false,
+      }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to leave team';
       set({ isLoading: false, error: message });
       throw error;
     }

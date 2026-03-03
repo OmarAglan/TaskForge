@@ -147,7 +147,7 @@ export const taskSchema = z.object({
     .max(2000, 'Description must be less than 2000 characters')
     .optional(),
   status: z
-    .enum(['todo', 'in_progress', 'in_review', 'completed', 'cancelled'])
+    .enum(['todo', 'in_progress', 'in_review', 'done', 'archived'])
     .optional(),
   priority: z
     .enum(['low', 'medium', 'high', 'urgent'])

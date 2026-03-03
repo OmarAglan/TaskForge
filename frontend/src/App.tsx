@@ -27,41 +27,9 @@ const TasksPage = lazy(() => import('./pages/tasks/TasksPage'));
 const TaskBoardPage = lazy(() => import('./pages/tasks/TaskBoardPage'));
 const TaskDetailPage = lazy(() => import('./pages/tasks/TaskDetailPage'));
 const MyTasksPage = lazy(() => import('./pages/tasks/MyTasksPage'));
-
-// Placeholder page for Phase 9
-const AnalyticsPage = lazy(() =>
-  Promise.resolve({
-    default: () => (
-      <div style={{ padding: '24px' }}>
-        <h1>Analytics</h1>
-        <p>Analytics page will be implemented in Phase 9.</p>
-      </div>
-    ),
-  })
-);
-
-// Placeholder pages for settings and profile
-const ProfilePage = lazy(() =>
-  Promise.resolve({
-    default: () => (
-      <div style={{ padding: '24px' }}>
-        <h1>Profile</h1>
-        <p>Profile page coming soon.</p>
-      </div>
-    ),
-  })
-);
-
-const SettingsPage = lazy(() =>
-  Promise.resolve({
-    default: () => (
-      <div style={{ padding: '24px' }}>
-        <h1>Settings</h1>
-        <p>Settings page coming soon.</p>
-      </div>
-    ),
-  })
-);
+const AnalyticsPage = lazy(() => import('./pages/analytics/AnalyticsPage'));
+const ProfilePage = lazy(() => import('./pages/profile/ProfilePage'));
+const SettingsPage = lazy(() => import('./pages/settings/SettingsPage'));
 
 /**
  * Auth initializer component
@@ -137,7 +105,7 @@ const App: React.FC = () => {
                       <Route path="/tasks/me" element={<MyTasksPage />} />
                       <Route path="/tasks/:id" element={<TaskDetailPage />} />
 
-                      {/* Analytics - Phase 9 */}
+                      {/* Analytics */}
                       <Route path="/analytics" element={<AnalyticsPage />} />
 
                       {/* Profile & Settings */}

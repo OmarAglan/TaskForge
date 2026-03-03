@@ -163,6 +163,24 @@ export class TasksController {
   }
 
   /**
+   * PATCH /tasks/:id/unassign
+   * Remove task assignee
+   */
+  @Patch(':id/unassign')
+  @LogActivity(ActivityAction.TASK_ASSIGN, EntityType.TASK)
+  async unassignTask(
+    @Param('id') id: string,
+    @CurrentUser('id') userId: string,
+  ) {
+    const task = await this.tasksService.unassignTask(id, userId);
+    return {
+      success: true,
+      data: task,
+      message: 'Task unassigned successfully',
+    };
+  }
+
+  /**
    * PATCH /tasks/:id/status
    * Update task status
    */

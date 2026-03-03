@@ -43,8 +43,8 @@ export const API_ENDPOINTS = {
   AUTH_REGISTER: '/auth/register',
   AUTH_LOGOUT: '/auth/logout',
   AUTH_REFRESH: '/auth/refresh',
-  AUTH_PROFILE: '/auth/profile',
-  AUTH_CHANGE_PASSWORD: '/auth/change-password',
+  AUTH_PROFILE: '/users/me',
+  AUTH_CHANGE_PASSWORD: '/users/me/password',
 
   // Users
   USERS: '/users',
@@ -92,6 +92,8 @@ export const STATUS_COLORS = {
   todo: 'default',
   in_progress: 'primary',
   in_review: 'info',
+  done: 'success',
+  archived: 'error',
   completed: 'success',
   cancelled: 'error',
 } as const;

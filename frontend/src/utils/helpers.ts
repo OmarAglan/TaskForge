@@ -171,6 +171,8 @@ export function getStatusColor(
     todo: 'default',
     in_progress: 'primary',
     in_review: 'info',
+    done: 'success',
+    archived: 'error',
     completed: 'success',
     cancelled: 'error',
     low: 'default',

@@ -293,6 +293,37 @@ export class TeamsService {
   }
 
   /**
+   * Leave a team (for non-owner members)
+   */
+  async leaveTeam(teamId: string, userId: string): Promise<void> {
+    const team = await this.teamRepository.findOne({ where: { id: teamId } });
+
+    if (!team) {
+      throw new NotFoundException(`Team with ID ${teamId} not found`);
+    }
+
+    const membership = await this.teamMemberRepository.findOne({
+      where: { teamId, userId },
+    });
+
+    if (!membership) {
+      throw new ForbiddenException('You are not a member of this team');
+    }
+
+    if (membership.role === TeamRole.OWNER) {
+      throw new BadRequestException(
+        'Team owner cannot leave the team. Transfer ownership first.',
+      );
+    }
+
+    await this.teamMemberRepository.remove(membership);
+
+    // Emit before removing room membership so active client receives event
+    this.websocketService.emitTeamMemberRemoved(team, userId, userId);
+    this.websocketService.removeUserFromTeamRoom(userId, teamId);
+  }
+
+  /**
    * Update a member's role (only OWNER)
    */
   async updateMemberRole(

@@ -8,8 +8,8 @@ export enum TaskStatus {
   TODO = 'todo',
   IN_PROGRESS = 'in_progress',
   IN_REVIEW = 'in_review',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
+  COMPLETED = 'done',
+  CANCELLED = 'archived',
 }
 
 /**
@@ -115,7 +115,7 @@ export function getStatusLabel(status: TaskStatus): string {
     [TaskStatus.IN_PROGRESS]: 'In Progress',
     [TaskStatus.IN_REVIEW]: 'In Review',
     [TaskStatus.COMPLETED]: 'Completed',
-    [TaskStatus.CANCELLED]: 'Cancelled',
+    [TaskStatus.CANCELLED]: 'Archived',
   };
   return labels[status];
 }
